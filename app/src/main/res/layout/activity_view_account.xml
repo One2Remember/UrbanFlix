@@ -13,4 +13,14 @@
         android:text="View Account Page"
         tools:layout_editor_absoluteX="139dp"
         tools:layout_editor_absoluteY="186dp" />
+
+    <Button
+        android:id="@+id/logout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="logoutAndGoHome"
+        android:text="Log Out"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="421dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
