@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+/**
+ * This defines the Login Activity
+ */
 public class LoginActivity extends AppCompatActivity {
 
     @Override

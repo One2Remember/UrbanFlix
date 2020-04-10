@@ -19,6 +19,9 @@ public class MainActivity extends AppCompatActivity {
 
     /** Called when the user taps the Login button */
     public void goToLoginScreen(View view) {
+        // if user is not logged in then do this
         startActivity(new Intent(this, LoginActivity.class));
+        // else do this
+        // startActivity(new Intent(this, ViewAccountActivity.class));
     }
 }

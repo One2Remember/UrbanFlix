@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
+/**
+ * This defines the Account Creation page (ignore the warning about the missing layout...)
+ */
 public class NewAccActivity extends AppCompatActivity {
 
     @Override
