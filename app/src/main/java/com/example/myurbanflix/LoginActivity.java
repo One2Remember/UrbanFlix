@@ -30,4 +30,9 @@ public class LoginActivity extends AppCompatActivity {
         /** Take user home */
         startActivity(new Intent(this, MainActivity.class));
     }
+
+    /** Called when user clicks "Create Account" button */
+    public void goToCreateAcc(View view) {
+        startActivity(new Intent(this, NewAccActivity.class));
+    }
 }

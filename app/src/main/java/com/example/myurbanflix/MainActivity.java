@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.content.SharedPreferences;
+import android.widget.TextView;
 
 /**
  * This opens the home page
@@ -16,6 +17,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        displayLoginStatus();   // displays view if user is logged in
+    }
+
+    public void displayLoginStatus() {
+        TextView tl = (TextView)findViewById(R.id.is_logged_in);
+        // get whether user is logged in; if preference does not already exist, assume false
+        SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
+        if(loggedIn) {
+            tl.setVisibility(View.VISIBLE);
+        }
+        else {
+            tl.setVisibility(View.INVISIBLE);
+        }
+
     }
 
     /**

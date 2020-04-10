@@ -50,6 +50,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title"/>
+        app:layout_constraintTop_toBottomOf="@+id/title">
+
+        <TextView
+            android:id="@+id/is_logged_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="You are logged in" />
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

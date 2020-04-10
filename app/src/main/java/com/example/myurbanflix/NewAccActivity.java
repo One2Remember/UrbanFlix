@@ -34,4 +34,9 @@ public class NewAccActivity extends AppCompatActivity {
         /** Take user to View Account Page */
         startActivity(new Intent(this, ViewAccountActivity.class));
     }
+
+    /** Called when user taps the Home button */
+    public void goHome(View view) {
+        startActivity(new Intent(this, MainActivity.class));
+    }
 }
