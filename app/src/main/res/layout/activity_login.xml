@@ -122,6 +122,7 @@
         android:id="@+id/acc_create_register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="goToNewAccountScreen"
         android:text="Create Account"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
