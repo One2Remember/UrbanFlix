@@ -27,4 +27,9 @@ public class ViewAccountActivity extends AppCompatActivity {
         /** Take user home */
         startActivity(new Intent(this, MainActivity.class));
     }
+
+    /** Called when user taps the Home button */
+    public void goHome(View view) {
+        startActivity(new Intent(this, MainActivity.class));
+    }
 }
