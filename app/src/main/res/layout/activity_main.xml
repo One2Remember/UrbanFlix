@@ -42,22 +42,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/movie_search" />
 
-    <ScrollView
-        android:id="@+id/simp_movie_scroll_pane"
-        android:layout_width="0dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/movie_list_recycler"
+        android:layout_width="411dp"
         android:layout_height="0dp"
-        android:layout_margin="5dp"
-        android:layout_marginTop="1dp"
+        android:layout_marginTop="105dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title">
-
-        <TextView
-            android:id="@+id/is_logged_in"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="You are logged in" />
-    </ScrollView>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

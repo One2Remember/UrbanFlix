@@ -1,7 +1,10 @@
 package com.example.myurbanflix;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,30 +20,63 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
     // this is for sending a message to movie search from search bar
     public static final String SEARCH_MESSAGE = "com.example.myurbanflix.MESSAGE";
+    // these are for use with the recycler view
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager layoutManager;
+    // for non-activity classes to access shared user prefs
+    public static Context contextOfApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        displayLoginStatus();   // displays view if user is logged in
+
+        // set my context for sharing with other non-activity classes
+        contextOfApplication = getApplicationContext();
+
+        // displayLoginStatus();   // displays view if user is logged in (NOT USED)
+
         searchBarToMovieSearch();   // adds a listener to search bar
+
+        // Set up the RecyclerView
+        recyclerView = (RecyclerView) findViewById(R.id.movie_list_recycler);
+
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        recyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        // specify an adapter CURRENTLY JUST USES GENERATED DATA SET FROM MovieReview.java
+        // THIS NEEDS TO BE ADAPTED TO USE OUR DATABASE SOMEHOW WITH A QUERY BUILT FROM THE
+        // USERS QUERY ABOVE ^^ CALLED "message"
+        mAdapter = new ReviewAdapter(MovieReview.GenerateReviewList());
+        recyclerView.setAdapter(mAdapter);
+    }
+
+    // get context for objects not in proper context
+    public static Context getContextOfApplication(){
+        return contextOfApplication;
     }
 
     /** Displays a view if user is logged in telling user they are logged in - for testing */
-    public void displayLoginStatus() {
-        // find element to make either visible or invisible
-        TextView tl = (TextView)findViewById(R.id.is_logged_in);
-        // get whether user is logged in; if preference does not already exist, assume false
-        SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-        boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
-        // set textview to visible or invisible based on status of loggedIn variable from prefs
-        if(loggedIn) {
-            tl.setVisibility(View.VISIBLE);
-        }
-        else {
-            tl.setVisibility(View.INVISIBLE);
-        }
-    }
+//    public void displayLoginStatus() {
+//        // find element to make either visible or invisible
+//        TextView tl = (TextView)findViewById(R.id.is_logged_in);
+//        // get whether user is logged in; if preference does not already exist, assume false
+//        SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+//        boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
+//        // set textview to visible or invisible based on status of loggedIn variable from prefs
+//        if(loggedIn) {
+//            tl.setVisibility(View.VISIBLE);
+//        }
+//        else {
+//            tl.setVisibility(View.INVISIBLE);
+//        }
+//    }
 
     /**
      * Attaches a listener to the search bar to send data (query) to new activity:

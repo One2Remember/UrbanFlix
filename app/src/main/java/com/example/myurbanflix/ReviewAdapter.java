@@ -1,6 +1,7 @@
 package com.example.myurbanflix;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import java.util.List;
 // Provides an adapter which takes a java List of MovieReview objects and turns it into
 // a form that a recycler view can use to populate its own list
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHolder>{
+    Context mContext;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -72,13 +74,25 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         Button ubutton = viewHolder.upButton;
         Button dbutton = viewHolder.downButton;
 
+        // Check if user is logged in
+        Context applicationContext = MainActivity.getContextOfApplication();
+        SharedPreferences myPrefs = applicationContext.getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+        boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
+
         mName.setText(mReview.movieName);   // set text for movie name text view
         revContents.setText(mReview.contents);  // set text for review contents
         revAuthor.setText(mReview.userName);    // set text for review author's username
 
         // set text for upvote button to number of upvotes
         ubutton.setText(String.valueOf(mReview.upvotes));
-        ubutton.setEnabled(true);
+        // enable/disable button based on if user is logged in
+        if(loggedIn) {
+            ubutton.setEnabled(true);
+        }
+        else {
+            ubutton.setEnabled(false);
+        }
+        // attach on click listener
         ubutton.setOnClickListener( new View.OnClickListener() {
             public void onClick(View v) {
                 // CODE HERE FOR HANDLING AN UPVOTE (currently uses dummy method that doesnt do much)
@@ -89,14 +103,24 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
 
         // set text for downvote button to number of downvotes
         dbutton.setText(String.valueOf(mReview.downvotes));
-        dbutton.setEnabled(true);
+        // enable/disable button based on if user is logged in
+        if(loggedIn) {
+            dbutton.setEnabled(true);
+        }
+        else {
+            dbutton.setEnabled(false);
+        }
+        // attack on click listener
         dbutton.setOnClickListener( new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
+                // get whether user is logged in; if preference does not already exist, assume false
                 mReview.downVote();
                 Log.d("downButtonPressed", "user downvoted " + mReview.movieName);
             }
         });
+
+
     }
 
     // Return the size of your dataset (invoked by the layout manager)

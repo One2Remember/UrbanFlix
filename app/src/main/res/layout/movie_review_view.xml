@@ -10,17 +10,18 @@
         android:id="@+id/movie_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
         android:text="Jaws"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@id/review_contents"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/upvote_button"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/review_contents"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
         android:text="Lorem Ipsum Dolor asdlfkjasdklfj"
         app:layout_constraintBottom_toBottomOf="@+id/author_un"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -30,20 +31,21 @@
         android:id="@+id/author_un"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
         android:text="Manny"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/date_created"
         app:layout_constraintTop_toBottomOf="@+id/review_contents" />
 
     <TextView
         android:id="@+id/date_created"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
         android:text="11/2/23"
+        android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/author_un"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/review_contents" />
 
 
@@ -55,7 +57,7 @@
         android:paddingRight="16dp"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/review_contents"
-        app:layout_constraintLeft_toRightOf="@+id/movie_name"
+
         app:layout_constraintRight_toLeftOf="@+id/downvote_button"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
@@ -64,11 +66,11 @@
         android:id="@+id/downvote_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/review_contents"
-        app:layout_constraintLeft_toRightOf="@+id/upvote_button"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
