@@ -26,13 +26,14 @@ public class MainActivity extends AppCompatActivity {
         searchBarToMovieSearch();   // adds a listener to search bar
     }
 
-    /** Displays a view if user is logged in telling user they are logged in */
+    /** Displays a view if user is logged in telling user they are logged in - for testing */
     public void displayLoginStatus() {
         // find element to make either visible or invisible
         TextView tl = (TextView)findViewById(R.id.is_logged_in);
         // get whether user is logged in; if preference does not already exist, assume false
         SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
+        // set textview to visible or invisible based on status of loggedIn variable from prefs
         if(loggedIn) {
             tl.setVisibility(View.VISIBLE);
         }
@@ -42,30 +43,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Attaches a listener to the search bar to send data to new activity (MovieSearchActivity)
+     * Attaches a listener to the search bar to send data (query) to new activity:
+     * MovieSearchActivity
      */
     public void searchBarToMovieSearch() {
         SearchView searchView = (SearchView)findViewById(R.id.movie_search);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            // when they hit enter it'll call callSearch(query) which I define below
             @Override
             public boolean onQueryTextSubmit(String query) {
                 callSearch(query);
                 return true;
             }
-
+            // if we want to do like auto suggest features or something they can go here
             @Override
             public boolean onQueryTextChange(String newText) {
                 return true;
             }
-
-            // this is what happens when the user hits enter in the search bar
+            // this is what is called when the user hits enter in the search bar
             public void callSearch(String query) {
                 if(!query.isEmpty()) {  // if query is not empty
                     // make a new Intent to open the MovieSearchActivity
                     Intent intent = new Intent(MainActivity.this, MovieSearchActivity.class);
-                    // add the search query to the Intent
+                    // add the search query to the Intent so MovieSearchActivity can see the query
                     intent.putExtra(SEARCH_MESSAGE, query);
-                    // start the new Activity
+                    // start the new Activity (with the message attached)
                     startActivity(intent);
                 }
             }
