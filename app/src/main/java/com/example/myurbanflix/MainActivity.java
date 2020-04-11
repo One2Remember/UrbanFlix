@@ -47,15 +47,17 @@ public class MainActivity extends AppCompatActivity {
      * MovieSearchActivity
      */
     public void searchBarToMovieSearch() {
-        SearchView searchView = (SearchView)findViewById(R.id.movie_search);
+        final SearchView searchView = (SearchView)findViewById(R.id.movie_search);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            // when they hit enter it'll call callSearch(query) which I define below
+            // when the user hits enter this will call callSearch(query) which I define below
             @Override
             public boolean onQueryTextSubmit(String query) {
-                callSearch(query);
+                searchView.setQuery("", false); // clear the search bar
+                searchView.clearFocus();    // hides the search bar
+                callSearch(query);  // uses search to start new activity
                 return true;
             }
-            // if we want to do like auto suggest features or something they can go here
+            // if we want to do auto suggest features or something they can go here
             @Override
             public boolean onQueryTextChange(String newText) {
                 return true;
