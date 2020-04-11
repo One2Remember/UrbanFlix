@@ -6,6 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
+/**
+ * This is the activity that is opened when a user searches for a particular movie.
+ * String 'message' contains the user query, so what this needs to do is use that query
+ * to populate from our database a recycler view containing movie titles that match that query
+ */
 public class MovieSearchActivity extends AppCompatActivity {
 
     @Override
