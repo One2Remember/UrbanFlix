@@ -9,7 +9,7 @@
 
     <SearchView
         android:id="@+id/movie_search"
-        android:layout_width="303dp"
+        android:layout_width="300dp"
         android:layout_height="36dp"
         android:layout_marginTop="16dp"
         android:queryHint="Movie Title"

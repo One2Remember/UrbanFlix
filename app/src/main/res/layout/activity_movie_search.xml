@@ -8,8 +8,9 @@
 
     <SearchView
         android:id="@+id/movie_search"
-        android:layout_width="298dp"
-        android:layout_height="45dp"
+        android:layout_width="300dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="16dp"
         android:queryHint="Movie Title"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/home_button"
@@ -32,10 +33,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/movie_list_recycler"
-        android:layout_width="419dp"
-        android:layout_height="584dp"
+        android:layout_width="403dp"
+        android:layout_height="0dp"
         android:layout_marginTop="100dp"
-        android:paddingTop="30dp"
+        android:paddingTop="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

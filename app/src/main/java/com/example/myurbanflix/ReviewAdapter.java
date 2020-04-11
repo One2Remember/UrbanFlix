@@ -22,12 +22,16 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         public TextView movieName;
+        public TextView reviewContents;
+        public TextView reviewAuthor;
         public Button upButton;
         public Button downButton;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             movieName = (TextView) itemView.findViewById(R.id.movie_name);
+            reviewContents = (TextView) itemView.findViewById(R.id.review_contents);
+            reviewAuthor = (TextView) itemView.findViewById(R.id.author_un);
             upButton = (Button) itemView.findViewById(R.id.upvote_button);
             downButton = (Button) itemView.findViewById(R.id.downvote_button);
         }
@@ -61,14 +65,16 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         // Get the data model based on position
         final MovieReview mReview = myMovieList.get(position);
 
-        // Set item views based on whats inside each movie review (currently just using movie name
-        // upvote button and downvote button
+        // Set item views based on whats inside each movie review
         final TextView mName = viewHolder.movieName;
+        final TextView revContents = viewHolder.reviewContents;
+        final TextView revAuthor = viewHolder.reviewAuthor;
         Button ubutton = viewHolder.upButton;
         Button dbutton = viewHolder.downButton;
 
-        // set text for movie name text view
-        mName.setText(mReview.movieName);
+        mName.setText(mReview.movieName);   // set text for movie name text view
+        revContents.setText(mReview.contents);  // set text for review contents
+        revAuthor.setText(mReview.userName);    // set text for review author's username
 
         // set text for upvote button to number of upvotes
         ubutton.setText(String.valueOf(mReview.upvotes));

@@ -23,10 +23,6 @@ public class MovieSearchActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
-    // hard coded data set
-
-    // hard coded data set
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,9 +35,9 @@ public class MovieSearchActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.SEARCH_MESSAGE);
 
-        // Set title of page based on user query
+        // Set title of page based on user query (this is all we're doing with the query right now)
         TextView title = findViewById(R.id.results_for);
-        title.setText("Showing results for: " + message);
+        title.setText("Results for: " + message);
 
         // Set up the RecyclerView
         recyclerView = (RecyclerView) findViewById(R.id.movie_list_recycler);
