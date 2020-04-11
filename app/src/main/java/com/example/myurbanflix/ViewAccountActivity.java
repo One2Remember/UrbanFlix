@@ -33,7 +33,7 @@ public class ViewAccountActivity extends AppCompatActivity {
         // specify an adapter CURRENTLY JUST USES GENERATED DATA SET FROM MovieReview.java
         // THIS NEEDS TO BE ADAPTED TO USE OUR DATABASE SOMEHOW WITH A QUERY BUILT FROM THE
         // USERS QUERY ABOVE ^^ CALLED "message"
-        mAdapter = new ReviewAdapter(MovieReview.GenerateReviewList());
+        mAdapter = new ReviewAdapterNoButton(MovieReview.GenerateReviewList());
         recyclerView.setAdapter(mAdapter);
     }
 

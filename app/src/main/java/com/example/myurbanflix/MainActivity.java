@@ -53,7 +53,16 @@ public class MainActivity extends AppCompatActivity {
         // specify an adapter CURRENTLY JUST USES GENERATED DATA SET FROM MovieReview.java
         // THIS NEEDS TO BE ADAPTED TO USE OUR DATABASE SOMEHOW WITH A QUERY BUILT FROM THE
         // USERS QUERY ABOVE ^^ CALLED "message"
-        mAdapter = new ReviewAdapter(MovieReview.GenerateReviewList());
+        // get whether user is logged in; if preference does not already exist, assume false
+        SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
+        // set recycler based on whether user is logged in or not
+        if(loggedIn) {
+            mAdapter = new ReviewAdapter(MovieReview.GenerateReviewList());
+        }
+        else {
+            mAdapter = new ReviewAdapterNoButton(MovieReview.GenerateReviewList());
+        }
         recyclerView.setAdapter(mAdapter);
     }
 
@@ -61,22 +70,6 @@ public class MainActivity extends AppCompatActivity {
     public static Context getContextOfApplication(){
         return contextOfApplication;
     }
-
-    /** Displays a view if user is logged in telling user they are logged in - for testing */
-//    public void displayLoginStatus() {
-//        // find element to make either visible or invisible
-//        TextView tl = (TextView)findViewById(R.id.is_logged_in);
-//        // get whether user is logged in; if preference does not already exist, assume false
-//        SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-//        boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
-//        // set textview to visible or invisible based on status of loggedIn variable from prefs
-//        if(loggedIn) {
-//            tl.setVisibility(View.VISIBLE);
-//        }
-//        else {
-//            tl.setVisibility(View.INVISIBLE);
-//        }
-//    }
 
     /**
      * Attaches a listener to the search bar to send data (query) to new activity:
