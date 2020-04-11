@@ -4,23 +4,31 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.content.SharedPreferences;
+import android.widget.EditText;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 /**
  * This opens the home page
  */
 public class MainActivity extends AppCompatActivity {
+    // this is for sending a message to movie search from search bar
+    public static final String SEARCH_MESSAGE = "com.example.myurbanflix.MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         displayLoginStatus();   // displays view if user is logged in
+        searchBarToMovieSearch();   // adds a listener to search bar
     }
 
+    /** Displays a view if user is logged in telling user they are logged in */
     public void displayLoginStatus() {
+        // find element to make either visible or invisible
         TextView tl = (TextView)findViewById(R.id.is_logged_in);
         // get whether user is logged in; if preference does not already exist, assume false
         SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
@@ -31,7 +39,37 @@ public class MainActivity extends AppCompatActivity {
         else {
             tl.setVisibility(View.INVISIBLE);
         }
+    }
 
+    /**
+     * Attaches a listener to the search bar to send data to new activity (MovieSearchActivity)
+     */
+    public void searchBarToMovieSearch() {
+        SearchView searchView = (SearchView)findViewById(R.id.movie_search);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                callSearch(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return true;
+            }
+
+            // this is what happens when the user hits enter in the search bar
+            public void callSearch(String query) {
+                if(!query.isEmpty()) {  // if query is not empty
+                    // make a new Intent to open the MovieSearchActivity
+                    Intent intent = new Intent(MainActivity.this, MovieSearchActivity.class);
+                    // add the search query to the Intent
+                    intent.putExtra(SEARCH_MESSAGE, query);
+                    // start the new Activity
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     /**
