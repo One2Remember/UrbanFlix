@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.content.SharedPreferences;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -31,14 +32,38 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         // set my context for sharing with other non-activity classes
         contextOfApplication = getApplicationContext();
+        initView();
+    }
 
-        // displayLoginStatus();   // displays view if user is logged in (NOT USED)
-
+    /**
+     * initialize various components within the view
+     */
+    public void initView() {
         searchBarToMovieSearch();   // adds a listener to search bar
+        setUpRecycler();    // set up recycler view
+        setUpAccountButton();   // set login button text based on user logged in status
+    }
 
+    /**
+     * sets account button to say either account or login based on login status
+     */
+    public void setUpAccountButton() {
+        SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
+        if(loggedIn) {
+            ((Button)findViewById(R.id.login)).setText("Account");
+        }
+        else {
+            ((Button)findViewById(R.id.login)).setText("Login");
+        }
+    }
+
+    /**
+     * set up the recycler view
+     */
+    public void setUpRecycler() {
         // Set up the RecyclerView
         recyclerView = (RecyclerView) findViewById(R.id.movie_list_recycler);
 
@@ -66,7 +91,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(mAdapter);
     }
 
-    // get context for objects not in proper context
+    /**
+     * @return context for classes that are not activities (so they can see shared preferences)
+     */
     public static Context getContextOfApplication(){
         return contextOfApplication;
     }
