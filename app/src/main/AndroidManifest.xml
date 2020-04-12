@@ -9,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        android:hardwareAccelerated="true"
         <activity android:name=".CreateReviewActivity"></activity>
         <activity android:name=".MovieSearchActivity" />
         <activity android:name=".ViewAccountActivity" />
@@ -17,7 +18,6 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
