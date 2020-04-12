@@ -28,6 +28,9 @@ public class CreateReviewActivity extends AppCompatActivity {
         addClickListeners();
     }
 
+    /**
+     * for hiding the keyboard when user clicks away from text field
+     */
     public void addClickListeners() {
         ((EditText)findViewById(R.id.title_field)).setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override

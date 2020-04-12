@@ -40,7 +40,8 @@ public class NewAccActivity extends AppCompatActivity {
         });
     }
 
-    /** Called when the user taps the create account button, creates account, logs user in and
+    /**
+     * Called when the user taps the create account button, creates account, logs user in and
      * takes user to account page
      */
     public void createAccountThenView(View view) {
