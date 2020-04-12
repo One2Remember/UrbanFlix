@@ -81,8 +81,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         final TextView revContents = viewHolder.reviewContents;
         final TextView revAuthor = viewHolder.reviewAuthor;
         final TextView dateView = viewHolder.date;
-        Button ubutton = viewHolder.upButton;
-        Button dbutton = viewHolder.downButton;
+        final Button ubutton = viewHolder.upButton;
+        final Button dbutton = viewHolder.downButton;
 
         /*
         TODO: PULL DOWN FROM USER PREFERENCES THE USER'S USERNAME
@@ -91,8 +91,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         TODO: IF THEY HAVE UPVOTED OR DOWNVOTED (QUERY IS NOT NUL), USE BOOLEAN TO TRACK USER'S
         TODO: UPVOTE/DOWNVOTE STATUS. BASED ON THAT STATUS, ENABLE/DISABLE UPVOTE/DOWNVOTE
          */
-        boolean upvoted = false;
-        boolean downvoted = false;
+        boolean upvoted = mReview.userUpvoted;  // TODO: CHANGE THESE TO PULL FROM DB INSTEAD OF LOCAL
+        boolean downvoted = mReview.userDownvoted;  // TODO: CHANGE THESE TO PULL FROM DB INSTEAD OF LOCAL
 
         revName.setText(mReview.reviewTitle);
         mName.setText(mReview.movieName);   // set text for movie name text view
@@ -109,17 +109,19 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         else {
             ubutton.setEnabled(false);
         }
-        // attach on click listener
+        // attach on click listener for upvote button
         ubutton.setOnClickListener( new View.OnClickListener() {
             public void onClick(View v) {
                 // TODO: ASK UP/DOWN DB IF THIS USER HAS UPDATE REVIEW: KEY, USE TO SET BOOL
-                boolean downvoted = false;  // TODO: PULL THIS INFO FROM UP/DOWN DB
+                boolean downvoted = mReview.userDownvoted;  // TODO: PULL THIS INFO FROM UP/DOWN DB INSTEAD OF LOCAL
                 // TODO: SEND UPVOTE/DOWNVOTE DB INFO THAT THIS USER HAS UPVOTED REVIEW: KEY
                 // TODO: SEND REVIEW DATABASE
                 if(downvoted) {
                     mReview.removeDownVote();
                 }
                 mReview.upVote();   // modify our local version
+                mReview.userUpvoted = true;
+                mReview.userDownvoted = false;
                 ReviewAdapter.this.notifyItemChanged(position); // tell adapter this item changed
                 }
         });
@@ -133,16 +135,18 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         else {
             dbutton.setEnabled(false);
         }
-        // attack on click listener
+        // attack on click listener for downvote button
         dbutton.setOnClickListener( new View.OnClickListener() {
             public void onClick(View v) {
                 /// TODO: ASK UP/DOWN DB IF THIS USER HAS UPDATE REVIEW: KEY, USE TO SET BOOL
-                boolean upvoted = false;  // TODO: PULL THIS INFO FROM UP/DOWN DB
+                boolean upvoted = mReview.userUpvoted;  // TODO: PULL THIS INFO FROM UP/DOWN DB
                 // TODO: SEND UPVOTE/DOWNVOTE DB INFO THAT THIS USER HAS UPVOTED REVIEW: KEY
                 // TODO: SEND REVIEW DATABASE
                 if(upvoted) {
                     mReview.removeUpVote();
                 }
+                mReview.userUpvoted = false;
+                mReview.userDownvoted = true;
                 mReview.downVote();
                 ReviewAdapter.this.notifyItemChanged(position); // tell adapter this item changed
             }
