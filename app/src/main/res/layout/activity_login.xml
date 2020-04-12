@@ -21,14 +21,15 @@
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="171dp"
-        android:layout_height="52dp"
+        android:layout_width="197dp"
+        android:layout_height="50dp"
         android:layout_marginTop="56dp"
         android:gravity="center_horizontal"
         android:text="UrbanFlix"
         android:textAlignment="center"
+        android:textColor="#0D3BC3"
         android:textSize="36sp"
-        android:textStyle="bold"
+        app:fontFamily="serif"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

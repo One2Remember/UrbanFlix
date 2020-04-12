@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MovieSearchActivity"></activity>
+        <activity android:name=".CreateReviewActivity"></activity>
+        <activity android:name=".MovieSearchActivity" />
         <activity android:name=".ViewAccountActivity" />
         <activity android:name=".NewAccActivity" />
         <activity android:name=".LoginActivity" />
