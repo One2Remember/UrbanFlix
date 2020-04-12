@@ -68,18 +68,18 @@ public class NewAccActivity extends AppCompatActivity {
 
     private void onCreateAccountClick() {
         // Gets a reference to the collection of users in the database
-        DocumentReference users = mFirestore.collection("users").document();
+        CollectionReference users = mFirestore.collection("users");
 
         // Get the user information from text fields
-        TextView emailTextView = findViewById(R.id.textview_email);
-        TextView usernameTextView = findViewById(R.id.textview_username);
-        TextView passwordTextView = findViewById(R.id.textview_password);
+        TextView emailTextView = findViewById(R.id.acc_create_email);
+        TextView usernameTextView = findViewById(R.id.acc_create_username);
+        TextView passwordTextView = findViewById(R.id.acc_create_password);
 
         // Create user
-        User newUser = new User(emailTextView.toString(), usernameTextView.toString(), passwordTextView.toString());
+        User newUser = new User(emailTextView.getText().toString(), usernameTextView.getText().toString(), passwordTextView.getText().toString());
 
         System.out.println(newUser);
         // Push user to database
-        users.set(newUser);
+        users.add(newUser);
     }
 }
