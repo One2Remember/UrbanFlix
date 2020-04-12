@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "200148673528",
+    "firebase_url": "https://myurbanflix-17f43.firebaseio.com",
+    "project_id": "myurbanflix-17f43",
+    "storage_bucket": "myurbanflix-17f43.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:200148673528:android:9b22ca1efb116b00d2ac0d",
+        "android_client_info": {
+          "package_name": "com.example.myurbanflix"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "200148673528-eimt9l4l8upqu7pm34290ungd7ni0ct6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPgBAy5hz283MqulBFY8Glmn6gFUjjTR4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "200148673528-eimt9l4l8upqu7pm34290ungd7ni0ct6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
