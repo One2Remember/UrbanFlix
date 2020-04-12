@@ -11,6 +11,8 @@ public class MovieReview {
     public int upvotes;
     public int downvotes;
     public long key;
+    public boolean userUpvoted;
+    public boolean userDownvoted;
 
     public MovieReview(String revName, String mName, String un, String date, String cont, int key) {
         reviewTitle = revName;
@@ -21,6 +23,8 @@ public class MovieReview {
         upvotes = 0;
         downvotes = 0;
         key = -1;
+        userUpvoted = false;
+        userDownvoted = false;
     }
 
     public void upVote() {
