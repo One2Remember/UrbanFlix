@@ -6,10 +6,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.TextView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import static android.view.View.VISIBLE;
 
 /**
  * This is the activity that is opened when a user searches for a particular movie.
@@ -17,12 +22,11 @@ import android.widget.TextView;
  * to populate from our database a recycler view containing movie titles that match that query
  */
 public class MovieSearchActivity extends AppCompatActivity {
-    // this is for sending a message to movie search from search bar
-    public static final String SEARCH_MESSAGE = "com.example.myurbanflix.MESSAGE";
     // these are for use with the recycler view
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
+    private String message; // for holding user query that got user to this page
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +37,7 @@ public class MovieSearchActivity extends AppCompatActivity {
         searchBarToMovieSearch();
 
         // Get the Intent that started this activity and extract the query message
-        Intent intent = getIntent();
-        String message = intent.getStringExtra(MainActivity.SEARCH_MESSAGE);
+        message = getIntent().getStringExtra(MainActivity.SEARCH_MESSAGE);
 
         // Set title of page based on user query (this is all we're doing with the query right now)
         TextView title = findViewById(R.id.results_for);
@@ -56,6 +59,21 @@ public class MovieSearchActivity extends AppCompatActivity {
         // USERS QUERY ABOVE ^^ CALLED "message"
         mAdapter = new ReviewAdapter(MovieReview.GenerateReviewList());
         recyclerView.setAdapter(mAdapter);
+
+        // hide the create a review button if the user is not logged in
+        showHideMakeReviewButton();
+    }
+
+    public void showHideMakeReviewButton() {
+        // get whether user is logged in; if preference does not already exist, assume false
+        SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
+        if(loggedIn) {
+            ((FloatingActionButton)findViewById(R.id.add_button)).setVisibility(View.VISIBLE);
+        }
+        else {
+            ((FloatingActionButton)findViewById(R.id.add_button)).setVisibility(View.INVISIBLE);
+        }
     }
 
     /**
@@ -84,7 +102,7 @@ public class MovieSearchActivity extends AppCompatActivity {
                     // make a new Intent to open the MovieSearchActivity
                     Intent intent = new Intent(MovieSearchActivity.this, MovieSearchActivity.class);
                     // add the search query to the Intent so MovieSearchActivity can see the query
-                    intent.putExtra(SEARCH_MESSAGE, query);
+                    intent.putExtra(MainActivity.SEARCH_MESSAGE, query);
                     // start the new Activity (with the message attached)
                     startActivity(intent);
                 }
@@ -92,8 +110,20 @@ public class MovieSearchActivity extends AppCompatActivity {
         });
     }
 
-    /** Called when user clicks "Home" button */
+    /**
+     * Called when user clicks "Home" button
+     * @param view
+     */
     public void goHome(View view) {
         startActivity(new Intent(this, MainActivity.class));
+    }
+
+    /**
+     * Called when user clicks FAB
+     */
+    public void goToCreateReview(View view) {
+        Intent intent = new Intent(this, CreateReviewActivity.class);
+        intent.putExtra(MainActivity.SEARCH_MESSAGE, message);
+        startActivity(intent);
     }
 }
