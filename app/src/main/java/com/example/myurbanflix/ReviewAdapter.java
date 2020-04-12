@@ -1,8 +1,8 @@
 package com.example.myurbanflix;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +16,6 @@ import java.util.List;
 // Provides an adapter which takes a java List of MovieReview objects and turns it into
 // a form that a recycler view can use to populate its own list
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHolder>{
-    Context mContext;
-
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
@@ -26,6 +24,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         public TextView movieName;
         public TextView reviewContents;
         public TextView reviewAuthor;
+        public TextView reviewTitle;
+        public TextView date;
         public Button upButton;
         public Button downButton;
 
@@ -34,13 +34,15 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
             movieName = (TextView) itemView.findViewById(R.id.movie_name);
             reviewContents = (TextView) itemView.findViewById(R.id.review_contents);
             reviewAuthor = (TextView) itemView.findViewById(R.id.author_un);
+            reviewTitle = (TextView) itemView.findViewById(R.id.review_title);
+            date = (TextView) itemView.findViewById(R.id.date_created);
             upButton = (Button) itemView.findViewById(R.id.upvote_button);
             downButton = (Button) itemView.findViewById(R.id.downvote_button);
         }
     }
 
     // Store a member variable for the contacts
-    private List<MovieReview> myMovieList;
+    protected List<MovieReview> myMovieList;
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public ReviewAdapter(List<MovieReview> movieList) {
@@ -62,29 +64,34 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
     }
 
     // Replace the contents of a view (invoked by the layout manager)
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(MyViewHolder viewHolder, final int position) {
         // Get the data model based on position
         final MovieReview mReview = myMovieList.get(position);
-
-        // Set item views based on whats inside each movie review
-        final TextView mName = viewHolder.movieName;
-        final TextView revContents = viewHolder.reviewContents;
-        final TextView revAuthor = viewHolder.reviewAuthor;
-        Button ubutton = viewHolder.upButton;
-        Button dbutton = viewHolder.downButton;
 
         // Check if user is logged in
         Context applicationContext = MainActivity.getContextOfApplication();
         SharedPreferences myPrefs = applicationContext.getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
         boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
 
+        // Set item views based on whats inside each movie review
+        final TextView mName = viewHolder.movieName;
+        final TextView revName = viewHolder.reviewTitle;
+        final TextView revContents = viewHolder.reviewContents;
+        final TextView revAuthor = viewHolder.reviewAuthor;
+        final TextView dateView = viewHolder.date;
+        Button ubutton = viewHolder.upButton;
+        Button dbutton = viewHolder.downButton;
+
+        revName.setText(mReview.reviewTitle);
         mName.setText(mReview.movieName);   // set text for movie name text view
         revContents.setText(mReview.contents);  // set text for review contents
         revAuthor.setText(mReview.userName);    // set text for review author's username
+        dateView.setText(mReview.dateCreated);  // set text for date created
 
         // set text for upvote button to number of upvotes
-        ubutton.setText(String.valueOf(mReview.upvotes));
+        ubutton.setText("+ " + String.valueOf(mReview.upvotes));
         // enable/disable button based on if user is logged in
         if(loggedIn) {
             ubutton.setEnabled(true);
@@ -102,7 +109,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         });
 
         // set text for downvote button to number of downvotes
-        dbutton.setText(String.valueOf(mReview.downvotes));
+        dbutton.setText("- " + String.valueOf(mReview.downvotes));
         // enable/disable button based on if user is logged in
         if(loggedIn) {
             dbutton.setEnabled(true);

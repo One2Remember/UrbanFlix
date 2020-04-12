@@ -47,10 +47,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="7dp"
         android:text="TextView"
+        android:textColor="#0D3BC3"
         android:textSize="24sp"
+        app:fontFamily="serif"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/movie_search"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/movie_search" />
 </androidx.constraintlayout.widget.ConstraintLayout>
