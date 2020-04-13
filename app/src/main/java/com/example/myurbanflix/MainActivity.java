@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.movie_list_recycler);
         // grab user preferences
         myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-        
+
         initFirestore();    // Initialize Firestore
         initView(); // Initialize recycler view
 
@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
         loginIfAvailable();
     }
 
+    /**
+     * Logs user in if they have locally stored credentials
+     */
     void loginIfAvailable() {
         prefEditor = myPrefs.edit();
         String un = myPrefs.getString("UN", "null");
@@ -75,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         if(mAdapter != null) {
             mAdapter.startListening();
         }
@@ -84,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-
         if(mAdapter != null) {
             mAdapter.stopListening();
         }
