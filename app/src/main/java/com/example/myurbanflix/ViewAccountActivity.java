@@ -9,16 +9,24 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class ViewAccountActivity extends AppCompatActivity {
     // these are for use with the recycler view
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
+    private FirebaseFirestore mFirestore;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_account);
+        mFirestore = FirebaseFirestore.getInstance();   // initialize handle to FireStore
+        initRecycler(); // initialize the recycler view, populate from database
+    }
 
+    public void initRecycler() {
         // Set up the RecyclerView
         recyclerView = (RecyclerView) findViewById(R.id.movie_list_recycler);
 
@@ -40,7 +48,6 @@ public class ViewAccountActivity extends AppCompatActivity {
     /** Called when the user taps the Logout button, logs out and takes user home */
     public void logoutAndGoHome(View view) {
         /** LOG IN CODE GOES HERE, MISSING VALIDATION OF CREDENTIALS */
-
         SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         SharedPreferences.Editor prefEditor = myPrefs.edit();
         prefEditor.putBoolean("LoggedIn", false);

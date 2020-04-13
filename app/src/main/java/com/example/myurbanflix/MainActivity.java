@@ -21,6 +21,9 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
     // this is for sending a message to movie search from search bar
     public static final String SEARCH_MESSAGE = "com.example.myurbanflix.MESSAGE";
+    public static final int UPVOTED = 1;
+    public static final int DOWNVOTED = -1;
+    public static final int NOTVOTED = 0;
     // these are for use with the recycler view
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -97,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     public static Context getContextOfApplication(){
         return contextOfApplication;
     }
+
 
     /**
      * Attaches a listener to the search bar to send data (query) to new activity:
