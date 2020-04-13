@@ -161,7 +161,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
                     // TODO: remove a downvote from the item in the database
                 }
                 mReview.upVote();   // modify our local version
-                myPrefs.edit().putInt(id[0], MainActivity.UPVOTED); // update user preferences
+                // set shared preferences so it is upvoted
+                SharedPreferences.Editor prefEditor = myPrefs.edit();
+                prefEditor.putInt(id[0], MainActivity.UPVOTED);
+                prefEditor.apply();
                 ubutton.setEnabled(false);  // disable the upvote button
                 // TODO: add an upvote to the item on the database
                 ReviewAdapter.this.notifyItemChanged(position); // tell adapter this item changed
@@ -187,7 +190,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
                     // TODO: remove an upvote from the item in the database
                 }
                 mReview.downVote();   // modify our local version
-                myPrefs.edit().putInt(id[0], MainActivity.DOWNVOTED);   // update user preferences
+                // set preferences to downvoted
+                SharedPreferences.Editor prefEditor = myPrefs.edit();
+                prefEditor.putInt(id[0], MainActivity.DOWNVOTED);
+                prefEditor.apply();
                 dbutton.setEnabled(false);  // disable the downvote button
                 ReviewAdapter.this.notifyItemChanged(position); // tell adapter this item changed
                 // TODO: add a downvote to the item on the database

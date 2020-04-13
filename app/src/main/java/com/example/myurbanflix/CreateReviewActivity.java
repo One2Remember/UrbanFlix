@@ -6,13 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -45,7 +43,7 @@ public class CreateReviewActivity extends AppCompatActivity {
         // get query that brought us here
         message = getIntent().getStringExtra(MainActivity.SEARCH_MESSAGE);
         if(!message.isEmpty()) {
-            ((EditText)findViewById(R.id.title_field)).setText(message);
+            ((EditText)findViewById(R.id.movie_title_field)).setText(message);
         }
 
         // add listeners for text edit fields
@@ -56,7 +54,7 @@ public class CreateReviewActivity extends AppCompatActivity {
      * for hiding the keyboard when user clicks away from text field
      */
     public void addClickListeners() {
-        ((EditText)findViewById(R.id.title_field)).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        ((EditText)findViewById(R.id.movie_title_field)).setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
@@ -102,7 +100,7 @@ public class CreateReviewActivity extends AppCompatActivity {
         final String[] id = new String[1];
         // make connection to database
         // pull data from text fields
-        movieTitle = ((EditText)findViewById(R.id.title_field)).getText().toString();
+        movieTitle = ((EditText)findViewById(R.id.movie_title_field)).getText().toString();
         reviewTitle = ((EditText)findViewById(R.id.review_title_field)).getText().toString();
         reviewBody = ((EditText)findViewById(R.id.comment_body)).getText().toString();
         // get username from User Preferences
@@ -138,7 +136,9 @@ public class CreateReviewActivity extends AppCompatActivity {
                 });
 
         // mark it as upvoted in user preferences
-        myPrefs.edit().putInt(id[0], MainActivity.UPVOTED);
+        SharedPreferences.Editor prefEditor = myPrefs.edit();
+        prefEditor.putInt(id[0], MainActivity.UPVOTED);
+        prefEditor.apply();
 
         // go home
         startActivity(new Intent(this, MainActivity.class));
