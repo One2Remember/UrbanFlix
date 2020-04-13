@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void initFirestore() {
         mFirestore = FirebaseFirestore.getInstance();
-
         // Get reviews from firestore
         // .orderBy("criteria", Query.Direction.{ASCENDING | DESCENDING})
         // .limit(int) will limit the number of reviews pulled from firestore
