@@ -17,6 +17,7 @@ public class ViewAccountActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private FirebaseFirestore mFirestore;
+    private SharedPreferences myPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +25,11 @@ public class ViewAccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_view_account);
         mFirestore = FirebaseFirestore.getInstance();   // initialize handle to FireStore
         initRecycler(); // initialize the recycler view, populate from database
+
+        // FOR JAMIE
+        myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        String username = myPrefs.getString("UN", "Admin");
+
     }
 
     public void initRecycler() {

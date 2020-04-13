@@ -22,6 +22,8 @@ import com.google.firebase.firestore.Query;
 
 import java.util.List;
 
+// THIS IS OBSOLETE
+
 // Provides an adapter which takes a java List of MovieReview objects and turns it into
 // a form that a recycler view can use to populate its own list
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHolder>{
