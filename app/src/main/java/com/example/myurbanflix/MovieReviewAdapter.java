@@ -58,7 +58,7 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
             reviewContents.setText(review.getContents());
             reviewAuthor.setText(review.getUser());
             reviewTitle.setText(review.getReviewTitle());
-            date.setText(review.getDateCreated());
+            date.setText(review.getDateCreated().substring(0, 9));  // truncate date
             upButton.setText( String.valueOf(review.getUpvotes()) );
             downButton.setText( String.valueOf(review.getDownvotes()) );
         }
