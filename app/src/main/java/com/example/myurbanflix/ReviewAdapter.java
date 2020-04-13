@@ -3,13 +3,20 @@ package com.example.myurbanflix;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import com.google.firebase.firestore.Query;
 
@@ -18,6 +25,8 @@ import java.util.List;
 // Provides an adapter which takes a java List of MovieReview objects and turns it into
 // a form that a recycler view can use to populate its own list
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHolder>{
+    private FirebaseFirestore mFirestore;
+
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
@@ -77,11 +86,6 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         // Get the data model based on position
         final MovieReview mReview = myMovieList.get(position);
 
-        // Check if user is logged in
-        Context applicationContext = MainActivity.getContextOfApplication();
-        SharedPreferences myPrefs = applicationContext.getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
-        boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
-
         // Set item views based on whats inside each movie review
         final TextView mName = viewHolder.movieName;
         final TextView revName = viewHolder.reviewTitle;
@@ -91,24 +95,52 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         final Button ubutton = viewHolder.upButton;
         final Button dbutton = viewHolder.downButton;
 
-        /*
-        TODO: PULL DOWN FROM USER PREFERENCES THE USER'S USERNAME
-        TODO: QUERY THE DB'S UPVOTE/DOWNVOTE TABLE FOR THE COMBINATION OF REVIEW KEY + USERNAME
-        TODO: TO SEE IF THE USER HAS UPVOTED/DOWNVOTED ALREADY
-        TODO: IF THEY HAVE UPVOTED OR DOWNVOTED (QUERY IS NOT NUL), USE BOOLEAN TO TRACK USER'S
-        TODO: UPVOTE/DOWNVOTE STATUS. BASED ON THAT STATUS, ENABLE/DISABLE UPVOTE/DOWNVOTE
-         */
-        boolean upvoted = mReview.userUpvoted;  // TODO: CHANGE THESE TO PULL FROM DB INSTEAD OF LOCAL
-        boolean downvoted = mReview.userDownvoted;  // TODO: CHANGE THESE TO PULL FROM DB INSTEAD OF LOCAL
+        // for holding the key of the creator of the review
+        final String[] id = new String[1];
 
-        revName.setText(mReview.reviewTitle);
-        mName.setText(mReview.movieName);   // set text for movie name text view
+        // make connection to database
+        mFirestore = FirebaseFirestore.getInstance();
+
+        // Check if user is logged in
+        Context applicationContext = MainActivity.getContextOfApplication();
+        final SharedPreferences myPrefs = applicationContext.getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+        boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
+
+        // get a reference to our reviews collection in the firestore
+        final CollectionReference reviewDB = mFirestore.collection("reviews");
+
+        // Grab the id of this particular review from the database (will now be a String in id[0])
+        reviewDB
+                .whereEqualTo("userName", mReview.userName)
+                .whereEqualTo("dateCreated", mReview.dateCreated)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d("query_success", document.getId() + " => " + document.getData());
+                                id[0] = document.getId();   // grab the key of the review
+                            }
+                        } else {
+                            Log.d("query_fail", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+        // check user prefs to see if this activity has been upvoted/downvoted already
+        int upvoteValue = myPrefs.getInt(id[0], MainActivity.NOTVOTED);
+        final boolean upvoted = upvoteValue == MainActivity.UPVOTED;
+        final boolean downvoted = upvoteValue == MainActivity.DOWNVOTED;
+
+        revName.setText(mReview.reviewTitle);   // set text for review title
+        mName.setText(mReview.movieName);       // set text for movie name text view
         revContents.setText(mReview.contents);  // set text for review contents
         revAuthor.setText(mReview.userName);    // set text for review author's username
         dateView.setText(mReview.dateCreated);  // set text for date created
 
         // set text for upvote button to number of upvotes
-        ubutton.setText("+ " + String.valueOf(mReview.upvotes));
+        ubutton.setText("+ " + mReview.upvotes);
         // enable/disable button based on if user is logged in and if theyve upvoted already
         if(loggedIn && !upvoted) {
             ubutton.setEnabled(true);
@@ -119,22 +151,23 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         // attach on click listener for upvote button
         ubutton.setOnClickListener( new View.OnClickListener() {
             public void onClick(View v) {
-                // TODO: ASK UP/DOWN DB IF THIS USER HAS UPDATE REVIEW: KEY, USE TO SET BOOL
-                boolean downvoted = mReview.userDownvoted;  // TODO: PULL THIS INFO FROM UP/DOWN DB INSTEAD OF LOCAL
-                // TODO: SEND UPVOTE/DOWNVOTE DB INFO THAT THIS USER HAS UPVOTED REVIEW: KEY
-                // TODO: SEND REVIEW DATABASE
+                // if item was previously downvoted
                 if(downvoted) {
-                    mReview.removeDownVote();
+                    mReview.removeDownVote();   // remove downvote from local item
+                    dbutton.setEnabled(true);   // enable the upvote button
+                    dbutton.setClickable(true);
+                    // TODO: remove a downvote from the item in the database
                 }
                 mReview.upVote();   // modify our local version
-                mReview.userUpvoted = true;
-                mReview.userDownvoted = false;
+                myPrefs.edit().putInt(id[0], MainActivity.UPVOTED); // update user preferences
+                ubutton.setEnabled(false);  // disable the upvote button
+                // TODO: add an upvote to the item on the database
                 ReviewAdapter.this.notifyItemChanged(position); // tell adapter this item changed
                 }
         });
 
         // set text for downvote button to number of downvotes
-        dbutton.setText("- " + String.valueOf(mReview.downvotes));
+        dbutton.setText("- " + mReview.downvotes);
         // enable/disable button based on if user is logged in
         if(loggedIn && !downvoted) {
             dbutton.setEnabled(true);
@@ -145,21 +178,19 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         // attack on click listener for downvote button
         dbutton.setOnClickListener( new View.OnClickListener() {
             public void onClick(View v) {
-                /// TODO: ASK UP/DOWN DB IF THIS USER HAS UPDATE REVIEW: KEY, USE TO SET BOOL
-                boolean upvoted = mReview.userUpvoted;  // TODO: PULL THIS INFO FROM UP/DOWN DB
-                // TODO: SEND UPVOTE/DOWNVOTE DB INFO THAT THIS USER HAS UPVOTED REVIEW: KEY
-                // TODO: SEND REVIEW DATABASE
+                // if item was previously upvoted
                 if(upvoted) {
-                    mReview.removeUpVote();
+                    mReview.removeUpVote();   // remove upvote from local item
+                    ubutton.setEnabled(true);   // enable the upvote button
+                    // TODO: remove an upvote from the item in the database
                 }
-                mReview.userUpvoted = false;
-                mReview.userDownvoted = true;
-                mReview.downVote();
+                mReview.downVote();   // modify our local version
+                myPrefs.edit().putInt(id[0], MainActivity.DOWNVOTED);   // update user preferences
+                dbutton.setEnabled(false);  // disable the downvote button
                 ReviewAdapter.this.notifyItemChanged(position); // tell adapter this item changed
+                // TODO: add a downvote to the item on the database
             }
         });
-
-
     }
 
     // Return the size of your dataset (invoked by the layout manager)

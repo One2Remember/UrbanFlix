@@ -47,18 +47,16 @@ tools:context=".NewAccActivity">
         app:layout_constraintVertical_bias="0.171" />
 
     <TextView
-    android:id="@+id/textview_email"
-    android:layout_width="128dp"
-    android:layout_height="19dp"
-    android:layout_marginBottom="8dp"
-    android:text="Email Address"
-    android:textSize="18sp"
-    app:layout_constraintBottom_toTopOf="@+id/account_create_email"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.35"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/title"
-    app:layout_constraintVertical_bias="1.0" />
+        android:id="@+id/textview_email"
+        android:layout_width="128dp"
+        android:layout_height="19dp"
+        android:layout_marginBottom="8dp"
+        android:text="Email Address"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/acc_create_email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.332"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/acc_create_username"
@@ -68,35 +66,36 @@ tools:context=".NewAccActivity">
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.474"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        app:layout_constraintVertical_bias="0.355" />
+        app:layout_constraintVertical_bias="0.341" />
 
     <TextView
-    android:id="@+id/textview_username"
-    android:layout_width="128dp"
-    android:layout_height="19dp"
-    android:layout_marginBottom="8dp"
-    android:text="Username"
-    android:textSize="18sp"
-    app:layout_constraintBottom_toTopOf="@+id/acc_create_username"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.35"
-    app:layout_constraintStart_toStartOf="parent" />
+        android:id="@+id/textview_username"
+        android:layout_width="128dp"
+        android:layout_height="19dp"
+        android:layout_marginBottom="8dp"
+        android:text="Username"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/acc_create_username"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.332"
+        app:layout_constraintStart_toStartOf="parent" />
 
-<TextView
-    android:id="@+id/textview_password"
-    android:layout_width="128dp"
-    android:layout_height="19dp"
-    android:layout_marginBottom="8dp"
-    android:text="Password"
-    android:textSize="18sp"
-    app:layout_constraintBottom_toTopOf="@+id/acc_create_password"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.349"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/acc_create_username"
-    app:layout_constraintVertical_bias="1.0" />
+    <TextView
+        android:id="@+id/textview_password"
+        android:layout_width="128dp"
+        android:layout_height="19dp"
+        android:layout_marginBottom="8dp"
+        android:text="Password"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/acc_create_password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.332"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/acc_create_username"
+        app:layout_constraintVertical_bias="1.0" />
 
     <EditText
         android:id="@+id/acc_create_password"
@@ -106,9 +105,10 @@ tools:context=".NewAccActivity">
         android:inputType="textPassword"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.474"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        app:layout_constraintVertical_bias="0.549" />
+        app:layout_constraintVertical_bias="0.496" />
 
     <Button
         android:id="@+id/acc_create_register"
@@ -121,5 +121,17 @@ tools:context=".NewAccActivity">
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title"
         app:layout_constraintVertical_bias="0.765" />
+
+    <TextView
+        android:id="@+id/acc_exists_warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="92dp"
+        android:layout_marginLeft="92dp"
+        android:layout_marginTop="16dp"
+        android:text="Email already in use!"
+        android:textColor="#AC0101"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/acc_create_password" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

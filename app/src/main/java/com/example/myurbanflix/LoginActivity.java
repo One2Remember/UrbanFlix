@@ -25,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         SharedPreferences.Editor prefEditor = myPrefs.edit();
         prefEditor.putBoolean("LoggedIn", true);
+        // TODO: ADD PREFEDITOR FUNCTIONALITY TO ADD USERNAME/PASSWORD TO PREFERENCES
         prefEditor.apply();
 
         /** Take user home */
