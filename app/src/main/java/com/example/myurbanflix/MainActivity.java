@@ -52,23 +52,24 @@ public class MainActivity extends AppCompatActivity {
         // set my context for sharing with other non-activity classes
         contextOfApplication = getApplicationContext();
         recyclerView = findViewById(R.id.movie_list_recycler);
-
-        initFirestore();    // Initialize Firestore
-        initView(); // Initialize recycler view
         // grab user preferences
         myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-        prefEditor = myPrefs.edit();
+        
+        initFirestore();    // Initialize Firestore
+        initView(); // Initialize recycler view
+
         // login user if they have stored credentials
         loginIfAvailable();
     }
 
     void loginIfAvailable() {
+        prefEditor = myPrefs.edit();
         String un = myPrefs.getString("UN", "null");
         String pw = myPrefs.getString( "PW", "null");
         if(un != "null" && pw != "null") {
             prefEditor.putBoolean("LoggedIn", true);
-            prefEditor.apply();
         }
+        prefEditor.apply();
     }
 
     @Override
@@ -195,7 +196,6 @@ public class MainActivity extends AppCompatActivity {
      */
     public void goToAccountScreen(View view) {
         // get whether user is logged in; if preference does not already exist, assume false
-        SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
 
         if(loggedIn) {
