@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     // for non-activity classes to access shared user prefs
     public static Context contextOfApplication;
+    SharedPreferences myPrefs;
+    SharedPreferences.Editor prefEditor;
 
     private FirebaseFirestore mFirestore;
     private Query mQuery;
@@ -51,11 +53,22 @@ public class MainActivity extends AppCompatActivity {
         contextOfApplication = getApplicationContext();
         recyclerView = findViewById(R.id.movie_list_recycler);
 
-        // Initialize Firestore
-        initFirestore();
+        initFirestore();    // Initialize Firestore
+        initView(); // Initialize recycler view
+        // grab user preferences
+        myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        prefEditor = myPrefs.edit();
+        // login user if they have stored credentials
+        loginIfAvailable();
+    }
 
-        // Initialize recycler view
-        initView();
+    void loginIfAvailable() {
+        String un = myPrefs.getString("UN", "null");
+        String pw = myPrefs.getString( "PW", "null");
+        if(un != "null" && pw != "null") {
+            prefEditor.putBoolean("LoggedIn", true);
+            prefEditor.apply();
+        }
     }
 
     @Override
@@ -97,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
      * sets account button to say either account or login based on login status
      */
     public void setUpAccountButton() {
-        SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
         if(loggedIn) {
             ((Button)findViewById(R.id.login)).setText("Account");
