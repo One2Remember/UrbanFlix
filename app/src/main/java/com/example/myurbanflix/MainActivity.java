@@ -17,10 +17,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 
 /**
@@ -105,7 +110,11 @@ public class MainActivity extends AppCompatActivity {
         // Get reviews from firestore
         // .orderBy("criteria", Query.Direction.{ASCENDING | DESCENDING})
         // .limit(int) will limit the number of reviews pulled from firestore
-        mQuery = mFirestore.collection("reviews").limit(50);
+        mQuery = mFirestore.collection("reviews")
+                .orderBy("upvotes", Query.Direction.DESCENDING)
+                .whereGreaterThanOrEqualTo("upvotes", 0)
+                .orderBy("dateCreated", Query.Direction.DESCENDING)
+                .limit(50);
     }
     /**
      * sets account button to say either account or login based on login status
