@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.Query;
+
 import java.util.List;
 
 // Provides an adapter which takes a java List of MovieReview objects and turns it into
@@ -20,6 +22,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     public static class MyViewHolder extends RecyclerView.ViewHolder {
+        private View view;
         // each data item is just a string in this case
         public TextView movieName;
         public TextView reviewContents;
@@ -38,6 +41,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
             date = (TextView) itemView.findViewById(R.id.date_created);
             upButton = (Button) itemView.findViewById(R.id.upvote_button);
             downButton = (Button) itemView.findViewById(R.id.downvote_button);
+        }
+
+        public void setMovieName(String movieName) {
+            this.movieName.setText(movieName);
         }
     }
 

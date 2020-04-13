@@ -1,5 +1,6 @@
 package com.example.myurbanflix;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -8,12 +9,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.content.SharedPreferences;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.TextView;
+
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+
 
 /**
  * This opens the home page
@@ -23,10 +34,14 @@ public class MainActivity extends AppCompatActivity {
     public static final String SEARCH_MESSAGE = "com.example.myurbanflix.MESSAGE";
     // these are for use with the recycler view
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
+    // private RecyclerView.Adapter mAdapter;
+    private MovieReviewAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     // for non-activity classes to access shared user prefs
     public static Context contextOfApplication;
+
+    private FirebaseFirestore mFirestore;
+    private Query mQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +49,31 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // set my context for sharing with other non-activity classes
         contextOfApplication = getApplicationContext();
+        recyclerView = findViewById(R.id.movie_list_recycler);
+
+        // Initialize Firestore
+        initFirestore();
+
+        // Initialize recycler view
         initView();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(mAdapter != null) {
+            mAdapter.startListening();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(mAdapter != null) {
+            mAdapter.stopListening();
+        }
     }
 
     /**
@@ -46,6 +85,14 @@ public class MainActivity extends AppCompatActivity {
         setUpAccountButton();   // set login button text based on user logged in status
     }
 
+    private void initFirestore() {
+        mFirestore = FirebaseFirestore.getInstance();
+
+        // Get reviews from firestore
+        // .orderBy("criteria", Query.Direction.{ASCENDING | DESCENDING})
+        // .limit(int) will limit the number of reviews pulled from firestore
+        mQuery = mFirestore.collection("reviews").limit(50);
+    }
     /**
      * sets account button to say either account or login based on login status
      */
@@ -64,30 +111,27 @@ public class MainActivity extends AppCompatActivity {
      * set up the recycler view
      */
     public void setUpRecycler() {
-        // Set up the RecyclerView
-        recyclerView = (RecyclerView) findViewById(R.id.movie_list_recycler);
+        if(mQuery == null) {
+        }
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
 
+        // Pull and display from database
+        mAdapter = new MovieReviewAdapter(mQuery) {
+            @Override
+            protected void onError(FirebaseFirestoreException e) {
+                // Show a snackbar on errors
+                Snackbar.make(findViewById(android.R.id.content),
+                        "Error: check logs for info.", Snackbar.LENGTH_LONG).show();
+            }
+        };
+
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        // specify an adapter CURRENTLY JUST USES GENERATED DATA SET FROM MovieReview.java
-        // THIS NEEDS TO BE ADAPTED TO USE OUR DATABASE SOMEHOW WITH A QUERY BUILT FROM THE
-        // USERS QUERY ABOVE ^^ CALLED "message"
-        // get whether user is logged in; if preference does not already exist, assume false
-        SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-        boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
-        // set recycler based on whether user is logged in or not
-        if(loggedIn) {
-            mAdapter = new ReviewAdapter(MovieReview.GenerateReviewList());
-        }
-        else {
-            mAdapter = new ReviewAdapterNoButton(MovieReview.GenerateReviewList());
-        }
         recyclerView.setAdapter(mAdapter);
     }
 
