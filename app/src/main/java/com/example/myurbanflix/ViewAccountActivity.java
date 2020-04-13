@@ -92,10 +92,14 @@ public class ViewAccountActivity extends AppCompatActivity {
 
     /** Called when the user taps the Logout button, logs out and takes user home */
     public void logoutAndGoHome(View view) {
-        /** LOG IN CODE GOES HERE, MISSING VALIDATION OF CREDENTIALS */
         SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         SharedPreferences.Editor prefEditor = myPrefs.edit();
         prefEditor.putBoolean("LoggedIn", false);
+        prefEditor.apply();
+        // remove username and password from shared preferences
+        prefEditor.remove("Username");
+        prefEditor.apply();
+        prefEditor.remove("Password");
         prefEditor.apply();
 
         /** Take user home */
