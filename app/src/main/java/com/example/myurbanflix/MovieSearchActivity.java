@@ -13,6 +13,10 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 
 import static android.view.View.VISIBLE;
 
@@ -24,9 +28,12 @@ import static android.view.View.VISIBLE;
 public class MovieSearchActivity extends AppCompatActivity {
     // these are for use with the recycler view
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private MovieReviewAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private String message; // for holding user query that got user to this page
+
+    private FirebaseFirestore mFirestore;
+    private Query mQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,17 +45,58 @@ public class MovieSearchActivity extends AppCompatActivity {
 
         // Get the Intent that started this activity and extract the query message
         message = getIntent().getStringExtra(MainActivity.SEARCH_MESSAGE);
-
         // Set title of page based on user query (this is all we're doing with the query right now)
         TextView title = findViewById(R.id.results_for);
         title.setText("Results for: " + message);
 
+        initFirestore();
+        initRecycler();
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(mAdapter != null) {
+            mAdapter.startListening();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(mAdapter != null) {
+            mAdapter.stopListening();
+        }
+    }
+
+    public void initFirestore() {
+        mFirestore = FirebaseFirestore.getInstance();
+
+        // Get reviews from firestore
+        // .orderBy("criteria", Query.Direction.{ASCENDING | DESCENDING})
+        // .limit(int) will limit the number of reviews pulled from firestore
+        mQuery = mFirestore.collection("reviews").whereEqualTo("movieName", message).limit(50);
+    }
+
+    public void initRecycler() {
         // Set up the RecyclerView
         recyclerView = (RecyclerView) findViewById(R.id.movie_list_recycler);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
+
+        mAdapter = new MovieReviewAdapter(mQuery) {
+            @Override
+            protected void onError(FirebaseFirestoreException e) {
+                // Show a snackbar on errors
+                Snackbar.make(findViewById(android.R.id.content),
+                        "Error: check logs for info.", Snackbar.LENGTH_LONG).show();
+            }
+        };
 
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
@@ -57,7 +105,6 @@ public class MovieSearchActivity extends AppCompatActivity {
         // specify an adapter CURRENTLY JUST USES GENERATED DATA SET FROM MovieReview.java
         // THIS NEEDS TO BE ADAPTED TO USE OUR DATABASE SOMEHOW WITH A QUERY BUILT FROM THE
         // USERS QUERY ABOVE ^^ CALLED "message"
-        mAdapter = new ReviewAdapter(MovieReview.GenerateReviewList());
         recyclerView.setAdapter(mAdapter);
 
         // hide the create a review button if the user is not logged in
