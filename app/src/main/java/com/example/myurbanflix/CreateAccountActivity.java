@@ -23,7 +23,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 /**
  * This defines the Account Creation page (ignore the warning about the missing layout...)
  */
-public class NewAccActivity extends AppCompatActivity {
+public class CreateAccountActivity extends AppCompatActivity {
     private FirebaseFirestore mFirestore;
     private SharedPreferences myPrefs;
     private SharedPreferences.Editor prefEditor;

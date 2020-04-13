@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -21,6 +22,7 @@ public class ViewAccountActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private FirebaseFirestore mFirestore;
     private SharedPreferences myPrefs;
+    private SharedPreferences.Editor prefEditor;
 
     private Query mQuery;
 
@@ -28,6 +30,8 @@ public class ViewAccountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_account);
+        myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);    // init preference
+
         initFirestore();   // initialize handle to FireStore
         initRecycler(); // initialize the recycler view, populate from database
     }
@@ -53,11 +57,9 @@ public class ViewAccountActivity extends AppCompatActivity {
 
     public void initFirestore() {
         mFirestore = FirebaseFirestore.getInstance();
-
         // Get reviews from firestore
         // .orderBy("criteria", Query.Direction.{ASCENDING | DESCENDING})
         // .limit(int) will limit the number of reviews pulled from firestore
-        myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         String username = myPrefs.getString("UN", "Admin");
         mQuery = mFirestore.collection("reviews").whereEqualTo("userName", username)
                 .orderBy("dateCreated", Query.Direction.ASCENDING).limit(50);
@@ -66,11 +68,9 @@ public class ViewAccountActivity extends AppCompatActivity {
     public void initRecycler() {
         // Set up the RecyclerView
         recyclerView = (RecyclerView) findViewById(R.id.movie_list_recycler);
-
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
-
         mAdapter = new MovieReviewAdapter(mQuery) {
             @Override
             protected void onError(FirebaseFirestoreException e) {
@@ -79,31 +79,23 @@ public class ViewAccountActivity extends AppCompatActivity {
                         "Error: check logs for info.", Snackbar.LENGTH_LONG).show();
             }
         };
-
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-
-        // specify an adapter CURRENTLY JUST USES GENERATED DATA SET FROM MovieReview.java
-        // THIS NEEDS TO BE ADAPTED TO USE OUR DATABASE SOMEHOW WITH A QUERY BUILT FROM THE
-        // USERS QUERY ABOVE ^^ CALLED "message"
-        // mAdapter = new ReviewAdapterNoButton(MovieReview.GenerateReviewList());
+        // specify an adapter
         recyclerView.setAdapter(mAdapter);
     }
 
     /** Called when the user taps the Logout button, logs out and takes user home */
     public void logoutAndGoHome(View view) {
-        SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         SharedPreferences.Editor prefEditor = myPrefs.edit();
+        // remove logged in status, username and password from shared preferences
         prefEditor.putBoolean("LoggedIn", false);
-        prefEditor.apply();
-        // remove username and password from shared preferences
-        prefEditor.remove("Username");
-        prefEditor.apply();
-        prefEditor.remove("Password");
+        prefEditor.remove("UN");
+        prefEditor.remove("PW");
         prefEditor.apply();
 
-        /** Take user home */
+        // Take user home
         startActivity(new Intent(this, MainActivity.class));
     }
 

@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.movie_list_recycler);
         // grab user preferences
         myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-        
+
         initFirestore();    // Initialize Firestore
         initView(); // Initialize recycler view
 
@@ -67,11 +67,14 @@ public class MainActivity extends AppCompatActivity {
         loginIfAvailable();
     }
 
+    /**
+     * Logs user in if they have locally stored credentials
+     */
     void loginIfAvailable() {
         prefEditor = myPrefs.edit();
         String un = myPrefs.getString("UN", "null");
         String pw = myPrefs.getString( "PW", "null");
-        if(un != "null" && pw != "null") {
+        if(!un.equals("null") && !pw.equals("null")) {
             prefEditor.putBoolean("LoggedIn", true);
         }
         prefEditor.apply();
@@ -80,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         if(mAdapter != null) {
             mAdapter.startListening();
         }
@@ -89,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-
         if(mAdapter != null) {
             mAdapter.stopListening();
         }
@@ -106,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void initFirestore() {
         mFirestore = FirebaseFirestore.getInstance();
-
         // Get reviews from firestore
         // .orderBy("criteria", Query.Direction.{ASCENDING | DESCENDING})
         // .limit(int) will limit the number of reviews pulled from firestore
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
     public void goToAccountScreen(View view) {
         // get whether user is logged in; if preference does not already exist, assume false
         boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
-
+        Log.d("logged_in_main", String.valueOf(loggedIn));
         if(loggedIn) {
             startActivity(new Intent(this, ViewAccountActivity.class));
         }

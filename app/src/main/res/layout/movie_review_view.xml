@@ -7,6 +7,20 @@
     android:orientation="horizontal">
 
     <TextView
+        android:id="@+id/num_downvotes"
+        android:layout_width="25dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:text="100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/review_contents" />
+
+    <TextView
         android:id="@+id/review_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -53,32 +67,6 @@
         app:layout_constraintTop_toBottomOf="@+id/review_contents" />
 
 
-    <Button
-        android:id="@+id/upvote_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@+id/review_contents"
-
-        app:layout_constraintRight_toLeftOf="@+id/downvote_button"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/downvote_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="16dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/review_contents"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
     <TextView
         android:id="@+id/movie_name"
         android:layout_width="wrap_content"
@@ -90,5 +78,35 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/date_created"
+        app:layout_constraintTop_toBottomOf="@+id/review_contents" />
+
+    <ImageButton
+        android:id="@+id/upvote_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/num_upvotes"
+        app:layout_constraintTop_toBottomOf="@+id/review_contents"
+        app:srcCompat="@android:drawable/arrow_up_float" />
+
+    <ImageButton
+        android:id="@+id/downvote_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/num_downvotes"
+        app:layout_constraintTop_toBottomOf="@+id/review_contents"
+        app:srcCompat="@android:drawable/arrow_down_float" />
+
+    <TextView
+        android:id="@+id/num_upvotes"
+        android:layout_width="25dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:text="100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/downvote_button"
         app:layout_constraintTop_toBottomOf="@+id/review_contents" />
 </androidx.constraintlayout.widget.ConstraintLayout>

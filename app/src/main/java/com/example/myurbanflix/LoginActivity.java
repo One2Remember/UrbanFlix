@@ -103,6 +103,6 @@ public class LoginActivity extends AppCompatActivity {
 
     /** Called when user clicks "Create Account" button */
     public void goToCreateAcc(View view) {
-        startActivity(new Intent(this, NewAccActivity.class));
+        startActivity(new Intent(this, CreateAccountActivity.class));
     }
 }
