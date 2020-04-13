@@ -13,7 +13,7 @@
         <activity android:name=".CreateReviewActivity"></activity>
         <activity android:name=".MovieSearchActivity" />
         <activity android:name=".ViewAccountActivity" />
-        <activity android:name=".NewAccActivity" />
+        <activity android:name=".CreateAccountActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

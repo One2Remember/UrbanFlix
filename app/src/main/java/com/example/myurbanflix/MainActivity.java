@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         prefEditor = myPrefs.edit();
         String un = myPrefs.getString("UN", "null");
         String pw = myPrefs.getString( "PW", "null");
-        if(un != "null" && pw != "null") {
+        if(!un.equals("null") && !pw.equals("null")) {
             prefEditor.putBoolean("LoggedIn", true);
         }
         prefEditor.apply();
@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
     public void goToAccountScreen(View view) {
         // get whether user is logged in; if preference does not already exist, assume false
         boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
-
+        Log.d("logged_in_main", String.valueOf(loggedIn));
         if(loggedIn) {
             startActivity(new Intent(this, ViewAccountActivity.class));
         }
