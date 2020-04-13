@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
 
         // Pull and display from database
-        mAdapter = new MovieReviewAdapter(mQuery) {
+        mAdapter = new MovieReviewAdapter(mQuery, true) {
             @Override
             protected void onError(FirebaseFirestoreException e) {
                 // Show a snackbar on errors

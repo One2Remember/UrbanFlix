@@ -90,7 +90,7 @@ public class MovieSearchActivity extends AppCompatActivity {
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
 
-        mAdapter = new MovieReviewAdapter(mQuery) {
+        mAdapter = new MovieReviewAdapter(mQuery, true) {
             @Override
             protected void onError(FirebaseFirestoreException e) {
                 // Show a snackbar on errors

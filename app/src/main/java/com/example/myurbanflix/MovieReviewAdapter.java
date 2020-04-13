@@ -24,9 +24,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.ViewHolder> {
-    public MovieReviewAdapter(Query query) {
+
+    private boolean enable_buttons;
+
+    public MovieReviewAdapter(Query query, boolean EnableButtons) {
         super(query);
+        enable_buttons = EnableButtons;
     }
+
+
 
     @NonNull
     @Override
@@ -37,7 +43,7 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(getSnapshot(position));
+        holder.bind(getSnapshot(position), enable_buttons);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -64,7 +70,7 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
             downButton = (ImageButton) itemView.findViewById(R.id.downvote_button);
         }
 
-        public void bind(final DocumentSnapshot snapshot) {
+        public void bind(final DocumentSnapshot snapshot, final boolean enable_buttons) {
             MovieReview review = snapshot.toObject(MovieReview.class);
             Resources resources = itemView.getResources();
 
@@ -76,7 +82,12 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
             upValue.setText(formatInt(review.getUpvotes()));
             downValue.setText(formatInt(review.getDownvotes()));
             // set button onclick functionality
-            setButtonFunctionality(snapshot);
+            if(enable_buttons) {
+                setButtonFunctionality(snapshot);
+            } else {
+                upButton.setEnabled(false);
+                downButton.setEnabled(false);
+            }
         }
 
         public void setButtonFunctionality(final DocumentSnapshot snapshot) {

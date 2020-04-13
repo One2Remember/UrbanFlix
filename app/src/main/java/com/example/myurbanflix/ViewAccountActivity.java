@@ -71,7 +71,7 @@ public class ViewAccountActivity extends AppCompatActivity {
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
-        mAdapter = new MovieReviewAdapter(mQuery) {
+        mAdapter = new MovieReviewAdapter(mQuery, false) {
             @Override
             protected void onError(FirebaseFirestoreException e) {
                 // Show a snackbar on errors
