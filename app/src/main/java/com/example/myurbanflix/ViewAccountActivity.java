@@ -59,7 +59,8 @@ public class ViewAccountActivity extends AppCompatActivity {
         // .limit(int) will limit the number of reviews pulled from firestore
         myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         String username = myPrefs.getString("UN", "Admin");
-        mQuery = mFirestore.collection("reviews").whereEqualTo("userName", username).limit(50);
+        mQuery = mFirestore.collection("reviews").whereEqualTo("userName", username)
+                .orderBy("dateCreated", Query.Direction.ASCENDING).limit(50);
     }
 
     public void initRecycler() {

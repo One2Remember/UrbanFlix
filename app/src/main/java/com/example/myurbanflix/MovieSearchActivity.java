@@ -78,7 +78,8 @@ public class MovieSearchActivity extends AppCompatActivity {
         // Get reviews from firestore
         // .orderBy("criteria", Query.Direction.{ASCENDING | DESCENDING})
         // .limit(int) will limit the number of reviews pulled from firestore
-        mQuery = mFirestore.collection("reviews").whereEqualTo("movieName", message).limit(50);
+        mQuery = mFirestore.collection("reviews").whereEqualTo("movieName", message)
+                .orderBy("dateCreated", Query.Direction.DESCENDING).limit(50);
     }
 
     public void initRecycler() {
