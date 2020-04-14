@@ -138,15 +138,16 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                 }
             }
 
-            /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~ UPBUTTON CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
             // enable/disable upButton based on if user is logged in
             if(loggedIn) {
                 upButton.setEnabled(true);
+                downButton.setEnabled(true);
             }
             else {
                 upButton.setEnabled(false);
+                downButton.setEnabled(false);
             }
+
             /**
              * sets heavily loaded onclick listener to upvote button to behave like a reddit
              * upvote button
@@ -176,16 +177,7 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                     }
                 }
             });
-
-            /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~ DOWNBUTTON CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-            // enable/disable downButton based on if user is logged in and if theyve downvoted already
-            if(loggedIn) {
-                downButton.setEnabled(true);
-            }
-            else {
-                downButton.setEnabled(false);
-            }
+            
             /**
              * sets heavily loaded onclick listener to downvote button to behave like a reddit
              * downvote button
@@ -239,35 +231,35 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                             if(inc_or_dec.equals("INCREASE")) {
                                 // update the value field to value + 1
                                 docRef
-                                        .update(field, document.getLong(field) + 1)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Log.d("LOGGER", "DocumentSnapshot successfully updated!");
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Log.w("LOGGER", "Error updating document", e);
-                                            }
-                                        });
+                                .update(field, document.getLong(field) + 1)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("LOGGER", "DocumentSnapshot successfully updated!");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w("LOGGER", "Error updating document", e);
+                                    }
+                                });
                             } else {
                                 // update the value field to value - 1
                                 docRef
-                                        .update(field, document.getLong(field) - 1)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Log.d("LOGGER", "DocumentSnapshot successfully updated!");
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Log.w("LOGGER", "Error updating document", e);
-                                            }
-                                        });
+                                .update(field, document.getLong(field) - 1)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("LOGGER", "DocumentSnapshot successfully updated!");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w("LOGGER", "Error updating document", e);
+                                    }
+                                });
                             }
                         } else {
                             Log.d("LOGGER", "No such document");
