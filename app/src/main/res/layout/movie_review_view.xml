@@ -7,24 +7,11 @@
     android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/num_downvotes"
-        android:layout_width="25dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="4dp"
-        android:fontFamily="monospace"
-        android:gravity="center"
-        android:text="100"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/review_contents" />
-
-    <TextView
         android:id="@+id/review_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="4dp"
         android:text="Jaws"
         android:textColor="#0D3BC3"
         android:textSize="20sp"
@@ -37,7 +24,7 @@
         android:id="@+id/review_contents"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="12dp"
         android:text="Lorem Ipsum Dolor asdlfkjasdklfj"
         app:layout_constraintBottom_toBottomOf="@+id/author_un"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -47,11 +34,10 @@
         android:id="@+id/author_un"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="12dp"
         android:text="Manny"
         android:textColor="#0D3BC3"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/review_contents" />
 
@@ -62,7 +48,6 @@
         android:layout_marginLeft="10dp"
         android:text="11/2/23"
         android:textStyle="italic"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/author_un"
         app:layout_constraintTop_toBottomOf="@+id/review_contents" />
 
@@ -76,7 +61,6 @@
         android:text="Jaws"
         android:textColor="#000000"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/date_created"
         app:layout_constraintTop_toBottomOf="@+id/review_contents" />
 
@@ -84,10 +68,13 @@
         android:id="@+id/upvote_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:tint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/num_upvotes"
-        app:layout_constraintTop_toBottomOf="@+id/review_contents"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/movie_name"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@android:drawable/arrow_up_float" />
 
     <ImageButton
@@ -96,8 +83,8 @@
         android:layout_height="wrap_content"
         android:tint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/num_downvotes"
-        app:layout_constraintTop_toBottomOf="@+id/review_contents"
+        app:layout_constraintStart_toEndOf="@+id/num_upvotes"
+        app:layout_constraintTop_toBottomOf="@+id/movie_name"
         app:srcCompat="@android:drawable/arrow_down_float" />
 
     <TextView
@@ -109,6 +96,6 @@
         android:gravity="center"
         android:text="100"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/downvote_button"
-        app:layout_constraintTop_toBottomOf="@+id/review_contents" />
+        app:layout_constraintStart_toEndOf="@+id/upvote_button"
+        app:layout_constraintTop_toBottomOf="@+id/movie_name" />
 </androidx.constraintlayout.widget.ConstraintLayout>

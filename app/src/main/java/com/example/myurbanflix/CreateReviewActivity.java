@@ -25,9 +25,10 @@ import java.util.Date;
 
 
 /**
- * CLASS IS DONE!
- *
- * This class manages the Create Review Activity using Firestore
+ * This class manages the Create Review Activity using Firestore, in which users can create
+ * reviews if they are logged in, and push those reviews to the firestore. This class takes
+ * care of autopopulating some data like username and date, and suggests a field for the
+ * name of the movie depending on the query that brought it here
  */
 public class CreateReviewActivity extends AppCompatActivity {
     private String message; // for holding query if a query brought user here
@@ -80,13 +81,20 @@ public class CreateReviewActivity extends AppCompatActivity {
         });
     }
 
-    // hides keyboard when user clicks out of text edit
+    /**
+     * hides keyboard when user clicks out of text edit
+     * @param view
+     */
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    // gets a neatly formatted date
+    //
+
+    /***
+     * @return a neatly formatted date from the current date
+     */
     private String getDate() {
         DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
         Date date = new Date();

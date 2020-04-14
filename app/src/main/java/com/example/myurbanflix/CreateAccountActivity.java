@@ -79,10 +79,17 @@ public class CreateAccountActivity extends AppCompatActivity {
         startActivity(new Intent(this, MainActivity.class));
     }
 
+    /**
+     * to initialize the firestore connection
+     */
     private void initFirestore() {
         mFirestore = FirebaseFirestore.getInstance();
     }
 
+    /**
+     * called when user clicks create account, creates the account if the user does not already
+     * exist, otherwise show warning
+     */
     private void onCreateAccountClick() {
         // Gets a reference to the collection of users in the database
         final CollectionReference users = mFirestore.collection("users");
