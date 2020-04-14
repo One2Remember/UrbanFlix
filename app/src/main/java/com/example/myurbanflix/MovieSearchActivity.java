@@ -71,6 +71,9 @@ public class MovieSearchActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * initialize our connection to the firestore
+     */
     public void initFirestore() {
         mFirestore = FirebaseFirestore.getInstance();
 
@@ -81,6 +84,9 @@ public class MovieSearchActivity extends AppCompatActivity {
                 .orderBy("dateCreated", Query.Direction.DESCENDING).limit(50);
     }
 
+    /**
+     * initialize the recyclerview
+     */
     public void initRecycler() {
         // Set up the RecyclerView
         recyclerView = (RecyclerView) findViewById(R.id.movie_list_recycler);
@@ -105,6 +111,9 @@ public class MovieSearchActivity extends AppCompatActivity {
         showHideMakeReviewButton(); // hide the create a review button if the user is not logged in
     }
 
+    /**
+     * set make review FAB to visible or invisible depending on user login status
+     */
     public void showHideMakeReviewButton() {
         // get whether user is logged in; if preference does not already exist, assume false
         SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
@@ -161,6 +170,7 @@ public class MovieSearchActivity extends AppCompatActivity {
 
     /**
      * Called when user clicks FAB
+     * @param view
      */
     public void goToCreateReview(View view) {
         Intent intent = new Intent(this, CreateReviewActivity.class);
