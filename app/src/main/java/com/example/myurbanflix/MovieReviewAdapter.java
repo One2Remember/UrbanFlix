@@ -68,7 +68,6 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
         public TextView reviewTitle;
         public TextView date;
         public TextView upValue;
-        public TextView downValue;
         public ImageButton upButton;
         public ImageButton downButton;
 
@@ -80,7 +79,6 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
             reviewTitle = (TextView) itemView.findViewById(R.id.review_title);
             date = (TextView) itemView.findViewById(R.id.date_created);
             upValue = (TextView) itemView.findViewById(R.id.num_upvotes);
-            downValue = (TextView) itemView.findViewById(R.id.num_downvotes);
             upButton = (ImageButton) itemView.findViewById(R.id.upvote_button);
             downButton = (ImageButton) itemView.findViewById(R.id.downvote_button);
         }
@@ -100,8 +98,7 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
             reviewAuthor.setText(review.getUser());
             reviewTitle.setText(review.getReviewTitle());
             date.setText(review.getDateCreated().substring(0, 10));  // truncate date
-            upValue.setText(formatInt(review.getUpvotes()));
-            downValue.setText(formatInt(review.getDownvotes()));
+            upValue.setText(formatInt(review.getUpvotes() - review.getDownvotes()));
             // set button onclick functionality
             if(enable_buttons) {
                 setButtonFunctionality(snapshot);

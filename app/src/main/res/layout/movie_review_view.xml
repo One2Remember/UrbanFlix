@@ -7,18 +7,6 @@
     android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/num_downvotes"
-        android:layout_width="25dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:fontFamily="monospace"
-        android:gravity="center"
-        android:text="100"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/downvote_button"
-        app:layout_constraintTop_toBottomOf="@+id/movie_name" />
-
-    <TextView
         android:id="@+id/review_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
