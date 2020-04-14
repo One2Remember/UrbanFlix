@@ -128,7 +128,7 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
             // set both buttons to white by default
             upButton.setColorFilter(Color.argb(255,255,255,255));
             downButton.setColorFilter(Color.argb(255,255,255,255));
-
+            // set appropriate buttons to blue as needed
             if(loggedIn) {
                 if(upvoteValue == MainActivity.UPVOTED) {    // set upvote button to blue
                     upButton.setColorFilter(Color.argb(255,13, 59, 195));
@@ -138,10 +138,9 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                 }
             }
 
-
             /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~ UPBUTTON CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-            // enable/disable upButton based on if user is logged in and if theyve upvoted already
+            // enable/disable upButton based on if user is logged in
             if(loggedIn) {
                 upButton.setEnabled(true);
             }
@@ -158,7 +157,7 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                     MovieReview review = snapshot.toObject(MovieReview.class);
                     if(upvoted) {   // if review was previously upvoted
                         // update the database to remove an upvote
-                        updateVotes("reviews", review_id, "upvotes", review.getUpvotes() - 1);
+                        updateVotes("reviews", review_id, "upvotes", "DECREASE");
                         // set shared preference so there is no vote
                         SharedPreferences.Editor prefEditor = myPrefs.edit();
                         prefEditor.remove(review_id);
@@ -166,10 +165,10 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                     }
                     else {  // review was not previously upvoted
                         if(downvoted) { // update the database to remove a downvote
-                            updateVotes("reviews", review_id, "downvotes", review.getDownvotes() - 1);
+                            updateVotes("reviews", review_id, "downvotes", "DECREASE");
                         }
                         // update the database to add an upvote
-                        updateVotes("reviews", review_id, "upvotes", review.getUpvotes() + 1);
+                        updateVotes("reviews", review_id, "upvotes", "INCREASE");
                         // set shared preferences so it is upvoted
                         SharedPreferences.Editor prefEditor = myPrefs.edit();
                         prefEditor.putInt(review_id, MainActivity.UPVOTED);
@@ -197,7 +196,7 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                 public void onClick(View v) {
                     // if item was previously downvoted
                     if(downvoted) { // update the database to remove a downvote
-                        updateVotes("reviews", review_id, "downvotes", review.getDownvotes() - 1);
+                        updateVotes("reviews", review_id, "downvotes", "DECREASE");
                         // set shared preference so there is no vote
                         SharedPreferences.Editor prefEditor = myPrefs.edit();
                         prefEditor.remove(review_id);
@@ -205,10 +204,10 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                     }
                     else {  // item was not downvoted
                         if(upvoted) {   // update the database to remove an upvote
-                            updateVotes("reviews", review_id, "upvotes", review.getUpvotes() - 1);
+                            updateVotes("reviews", review_id, "upvotes", "DECREASE");
                         }
                         // update the database to add a downvote
-                        updateVotes("reviews", review_id, "downvotes", review.getDownvotes() + 1);
+                        updateVotes("reviews", review_id, "downvotes", "INCREASE");
                         // set shared preferences so it is downvoted
                         SharedPreferences.Editor prefEditor = myPrefs.edit();
                         prefEditor.putInt(review_id, MainActivity.DOWNVOTED);
@@ -219,45 +218,15 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
         }
 
         /**
-         * Set the field 'field' of the document 'doc_key', in collection 'collection' to 'new_value
-         * @param collection db connection to modify
-         * @param doc_key document in db to modify
-         * @param field field in document to modify
-         * @param new_value new value to modify field
-         */
-        public void updateVotes(String collection, String doc_key, String field, int new_value) {
-            FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
-            DocumentReference docRef = mFirestore.collection(collection).document(doc_key);
-            // Set the field 'field' of the document 'doc_key' to 'new_value
-            docRef
-                    .update(field, new_value)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d("success", "DocumentSnapshot successfully updated!");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w("failure", "Error updating document", e);
-                        }
-                    });
-        }
-
-
-        /**
          * get the value of field 'field' of the document 'doc_key', in collection 'collection'
          * @param collection collection to query
          * @param doc_key document of interest
          * @param field field of interest
-         * @return value of field
-         * @throws InterruptedException
+         * @param inc_or_dec is either "INCREASE" OR "DECREASE" based on if we want to upvote or downvote
          */
-        public String getFieldValue(String collection, String doc_key, final String field) throws InterruptedException {
-            final String[] fieldValue = {""};
+        public void updateVotes(String collection, String doc_key, final String field, final String inc_or_dec){
             FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
-            DocumentReference docRef = mFirestore.collection(collection).document(doc_key);
+            final DocumentReference docRef = mFirestore.collection(collection).document(doc_key);
             Log.d("LOGGER", "docRefID is:" + docRef.getId());
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -267,7 +236,39 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                         DocumentSnapshot document = task.getResult();
                         if (document != null) {
                             Log.d("LOGGER", "Got in here");
-                            fieldValue[0] = document.getString(field);
+                            if(inc_or_dec.equals("INCREASE")) {
+                                // update the value field to value + 1
+                                docRef
+                                        .update(field, document.getLong(field) + 1)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Log.d("LOGGER", "DocumentSnapshot successfully updated!");
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.w("LOGGER", "Error updating document", e);
+                                            }
+                                        });
+                            } else {
+                                // update the value field to value - 1
+                                docRef
+                                        .update(field, document.getLong(field) - 1)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Log.d("LOGGER", "DocumentSnapshot successfully updated!");
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.w("LOGGER", "Error updating document", e);
+                                            }
+                                        });
+                            }
                         } else {
                             Log.d("LOGGER", "No such document");
                         }
@@ -276,11 +277,6 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                     }
                 }
             });
-            while(fieldValue[0].equals("")) {
-                Log.d("LOGGER", "still waiting");
-                Thread.sleep(2000);
-            }
-            return fieldValue[0];
         }
 
         /**
