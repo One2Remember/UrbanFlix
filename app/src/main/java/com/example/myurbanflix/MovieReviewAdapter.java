@@ -128,12 +128,16 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
             // set both buttons to white by default
             upButton.setColorFilter(Color.argb(255,255,255,255));
             downButton.setColorFilter(Color.argb(255,255,255,255));
-            if(upvoteValue == MainActivity.UPVOTED) {    // set upvote button to blue
-                upButton.setColorFilter(Color.argb(255,13, 59, 195));
+
+            if(loggedIn) {
+                if(upvoteValue == MainActivity.UPVOTED) {    // set upvote button to blue
+                    upButton.setColorFilter(Color.argb(255,13, 59, 195));
+                }
+                else if (upvoteValue == MainActivity.DOWNVOTED) {   // set downvote button blue
+                    downButton.setColorFilter(Color.argb(255,13, 59, 195));
+                }
             }
-            else if (upvoteValue == MainActivity.DOWNVOTED) {   // set downvote button blue
-                downButton.setColorFilter(Color.argb(255,13, 59, 195));
-            }
+
 
             /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~ UPBUTTON CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
