@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import android.widget.Button;
 import android.widget.SearchView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     public void initView() {
         searchBarToMovieSearch();   // adds a listener to search bar
         setUpRecycler();    // set up recycler view
-        setUpAccountButton();   // set login button text based on user logged in status
+        setUpButtons();     // set login and fab button based on user logged in status
     }
 
     /**
@@ -114,13 +115,15 @@ public class MainActivity extends AppCompatActivity {
     /**
      * sets account button to say either account or login based on login status
      */
-    public void setUpAccountButton() {
+    public void setUpButtons() {
         boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
         if(loggedIn) {
             ((Button)findViewById(R.id.login)).setText("Account");
+            ((FloatingActionButton)findViewById(R.id.create_review_main)).setVisibility(View.VISIBLE);
         }
         else {
             ((Button)findViewById(R.id.login)).setText("Login");
+            ((FloatingActionButton)findViewById(R.id.create_review_main)).setVisibility(View.INVISIBLE);
         }
     }
 
@@ -190,6 +193,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    /**
+     * Called when the user clicks the create a review button
+     * @param view
+     */
+    public void goToCreateReview(View view) {
+        startActivity(new Intent(this, CreateReviewActivity.class));
     }
 
     /**
