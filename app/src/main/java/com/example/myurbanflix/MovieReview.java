@@ -4,12 +4,14 @@ import java.util.ArrayList;
 
 public class  MovieReview {
     public String movieName;
+    public String movieNameLower;
     public String userName;
     public String dateCreated;
     public String contents;
     public String reviewTitle;
     public int upvotes;
     public int downvotes;
+
 
     /** No argument constructor to allow for deserialization
      */
@@ -18,6 +20,7 @@ public class  MovieReview {
     public MovieReview(String revName, String mName, String un, String date, String cont) {
         reviewTitle = revName;
         movieName = mName;
+        movieNameLower = movieName.toLowerCase();
         userName = un;
         dateCreated = date;
         contents = cont;
@@ -45,6 +48,10 @@ public class  MovieReview {
     // return name of movie
     public String getMovieName() {
         return this.movieName;
+    }
+
+    public String getMovieNameLower() {
+        return this.movieNameLower;
     }
 
     // return username of review author
