@@ -33,20 +33,21 @@ import java.util.Date;
 public class CreateReviewActivity extends AppCompatActivity {
     private String message; // for holding query if a query brought user here
     private FirebaseFirestore mFirestore;
+    SharedPreferences myPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_review);
+        // get user preferences
+        myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         // make connection to database
         mFirestore = FirebaseFirestore.getInstance();
-
         // get query that brought us here
         message = getIntent().getStringExtra(MainActivity.SEARCH_MESSAGE);
-        if(!message.isEmpty()) {
+        if(message != null) {
             ((EditText)findViewById(R.id.movie_title_field)).setText(message);
         }
-
         // add listeners for text edit fields
         addClickListeners();
     }
@@ -90,9 +91,7 @@ public class CreateReviewActivity extends AppCompatActivity {
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    //
-
-    /***
+    /**
      * @return a neatly formatted date from the current date
      */
     private String getDate() {
@@ -100,19 +99,24 @@ public class CreateReviewActivity extends AppCompatActivity {
         Date date = new Date();
         return dateFormat.format(date);
     }
+    //mark it as upvoted in user preferences
+    public void updateUserPreference(String key) {
+        SharedPreferences.Editor prefEditor = myPrefs.edit();
+        prefEditor.putInt(key, MainActivity.UPVOTED);
+        prefEditor.apply();
+    }
+
     /**
      * Called when the user taps the Submit button, adds review to database and goes home
      */
     public void createNewReview(View view) {
         String movieTitle, reviewTitle, reviewBody, date, myUN;
-        final String[] id = new String[1];
         // make connection to database
         // pull data from text fields
         movieTitle = ((EditText)findViewById(R.id.movie_title_field)).getText().toString();
         reviewTitle = ((EditText)findViewById(R.id.review_title_field)).getText().toString();
         reviewBody = ((EditText)findViewById(R.id.comment_body)).getText().toString();
         // get username from User Preferences
-        SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         myUN = myPrefs.getString("UN", "Admin");
         // get date from java functions
         date = getDate();
@@ -135,19 +139,13 @@ public class CreateReviewActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d("query_success", document.getId() + " => " + document.getData());
-                                id[0] = document.getId();   // grab the key of the review
+                                updateUserPreference(document.getId());
                             }
                         } else {
                             Log.d("query_fail", "Error getting documents: ", task.getException());
                         }
                     }
                 });
-
-        // mark it as upvoted in user preferences
-        SharedPreferences.Editor prefEditor = myPrefs.edit();
-        prefEditor.putInt(id[0], MainActivity.UPVOTED);
-        prefEditor.apply();
-
         // go home
         startActivity(new Intent(this, MainActivity.class));
     }
