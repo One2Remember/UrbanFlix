@@ -24,10 +24,21 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+/**
+ * This adapter is used for all recycler views in order to inflate movie_review_views and
+ * populate them with data from our firestore query. Additional functionality allows
+ * for recycler to enable/disable upvote downvote buttons for particular views, such as
+ * the ViewAccountActivity, which we do not want to be able to mutate reviews
+ */
 public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.ViewHolder> {
 
-    private boolean enable_buttons;
+    private boolean enable_buttons; // local field for storing if buttons should be enabled
 
+    /**
+     * Constructor which initializes the moviereviewadapter
+     * @param query the firestore query which will be used to populate the view
+     * @param EnableButtons tells adapter whether buttons should be enabled or not
+     */
     public MovieReviewAdapter(Query query, boolean EnableButtons) {
         super(query);
         enable_buttons = EnableButtons;
@@ -47,6 +58,9 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
         holder.bind(getSnapshot(position), enable_buttons);
     }
 
+    /**
+     * grabs handles to local textviews
+     */
     static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView movieName;
         public TextView reviewContents;
@@ -71,6 +85,12 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
             downButton = (ImageButton) itemView.findViewById(R.id.downvote_button);
         }
 
+        /**
+         * binds contents from a particular document snapshot to a view which will be used to
+         * inflate the recycler view
+         * @param snapshot is the document snapshot containing the data of a single db object
+         * @param enable_buttons tells binder whether or not to enable buttons
+         */
         public void bind(final DocumentSnapshot snapshot, final boolean enable_buttons) {
             MovieReview review = snapshot.toObject(MovieReview.class);
             Resources resources = itemView.getResources();
@@ -91,6 +111,11 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
             }
         }
 
+        /**
+         * does the heavy lifting of adding on-click listeners which update the database and
+         * set the colors of the buttons based on user input
+         * @param snapshot the same document snapshot is passed through
+         */
         public void setButtonFunctionality(final DocumentSnapshot snapshot) {
             // Check if user is logged in
             Context applicationContext = MainActivity.getContextOfApplication();
@@ -212,7 +237,14 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                 }
             });
         }
-        // Set the field 'field' of the document 'doc_key', in collection 'collection' to 'new_value
+
+        /**
+         * Set the field 'field' of the document 'doc_key', in collection 'collection' to 'new_value
+         * @param collection db connection to modify
+         * @param doc_key document in db to modify
+         * @param field field in document to modify
+         * @param new_value new value to modify field
+         */
         public void updateVotes(String collection, String doc_key, String field, int new_value) {
             FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
             DocumentReference docRef = mFirestore.collection(collection).document(doc_key);
@@ -233,7 +265,15 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                     });
         }
 
-        // get the value of field 'field' of the document 'doc_key', in collection 'collection'
+
+        /**
+         * get the value of field 'field' of the document 'doc_key', in collection 'collection'
+         * @param collection collection to query
+         * @param doc_key document of interest
+         * @param field field of interest
+         * @return value of field
+         * @throws InterruptedException
+         */
         public String getFieldValue(String collection, String doc_key, final String field) throws InterruptedException {
             final String[] fieldValue = {""};
             FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
