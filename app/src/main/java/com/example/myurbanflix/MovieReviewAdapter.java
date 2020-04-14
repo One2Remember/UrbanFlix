@@ -125,19 +125,20 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
             int upvoteValue = myPrefs.getInt(review_id, MainActivity.NOTVOTED);
             final boolean upvoted = upvoteValue == MainActivity.UPVOTED;
             final boolean downvoted = upvoteValue == MainActivity.DOWNVOTED;
-
-            // set default button colors
-            if(upvoted) {
+            // set both buttons to white by default
+            upButton.setColorFilter(Color.argb(255,255,255,255));
+            downButton.setColorFilter(Color.argb(255,255,255,255));
+            if(upvoteValue == MainActivity.UPVOTED) {    // set upvote button to blue
                 upButton.setColorFilter(Color.argb(255,13, 59, 195));
             }
-            if(downvoted) {
+            else if (upvoteValue == MainActivity.DOWNVOTED) {   // set downvote button blue
                 downButton.setColorFilter(Color.argb(255,13, 59, 195));
             }
 
             /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~ UPBUTTON CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
             // enable/disable upButton based on if user is logged in and if theyve upvoted already
-            if(loggedIn && !upvoted) {
+            if(loggedIn) {
                 upButton.setEnabled(true);
             }
             else {
@@ -151,43 +152,32 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                 public void onClick(View v) {
                     // grab a reference to our review for easy field checking
                     MovieReview review = snapshot.toObject(MovieReview.class);
-                    // if item was previously downvoted
-                    if(downvoted) {
-                        downButton.setEnabled(true);   // enable the upvote button
-                        downButton.setClickable(true);
-//                        try {
-//                            curDownvotes = Integer.parseInt(getFieldValue("reviews", review_id, "downvotes"));
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-                        // set tint of downvoted button to white (default)
-                        // set downvote button to white as it is now clickable
-                        downButton.setColorFilter(Color.argb(255,255,255,255));
-                        // update the database
-                        updateVotes("reviews", review_id, "downvotes", review.getDownvotes() - 1);
+                    if(upvoted) {   // if review was previously upvoted
+                        // update the database to remove an upvote
+                        updateVotes("reviews", review_id, "upvotes", review.getUpvotes() - 1);
+                        // set shared preference so there is no vote
+                        SharedPreferences.Editor prefEditor = myPrefs.edit();
+                        prefEditor.remove(review_id);
+                        prefEditor.apply();
                     }
-                    // set shared preferences so it is upvoted
-                    SharedPreferences.Editor prefEditor = myPrefs.edit();
-                    prefEditor.putInt(review_id, MainActivity.UPVOTED);
-                    prefEditor.apply();
-                    upButton.setEnabled(false);  // disable the upvote button
-//                    try {
-//                        curUpvotes = Integer.parseInt(getFieldValue("reviews", review_id, "upvotes"));
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-                    // set tint of upvoted button to blue
-                    // set upvote to blue as it is now unclickable
-                    upButton.setColorFilter(Color.argb(255,13, 59, 195));
-                    // update the database
-                    updateVotes("reviews", review_id, "upvotes", review.getUpvotes() + 1);
+                    else {  // review was not previously upvoted
+                        if(downvoted) { // update the database to remove a downvote
+                            updateVotes("reviews", review_id, "downvotes", review.getDownvotes() - 1);
+                        }
+                        // update the database to add an upvote
+                        updateVotes("reviews", review_id, "upvotes", review.getUpvotes() + 1);
+                        // set shared preferences so it is upvoted
+                        SharedPreferences.Editor prefEditor = myPrefs.edit();
+                        prefEditor.putInt(review_id, MainActivity.UPVOTED);
+                        prefEditor.apply();
+                    }
                 }
             });
 
             /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~ DOWNBUTTON CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
             // enable/disable downButton based on if user is logged in and if theyve downvoted already
-            if(loggedIn && !downvoted) {
+            if(loggedIn) {
                 downButton.setEnabled(true);
             }
             else {
@@ -201,36 +191,25 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                 // grab a reference to our review for easy field checking
                 MovieReview review = snapshot.toObject(MovieReview.class);
                 public void onClick(View v) {
-                    // if item was previously upvoted
-                    if(upvoted) {
-                        upButton.setEnabled(true);   // enable the upvote button
-                        upButton.setClickable(true);
-//                        try {
-//                            curUpvotes = Integer.parseInt(getFieldValue("reviews", review_id, "upvotes"));
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-                        // set tint of downvoted button to white (default)
-                        // set the upvote button to white as it is now clickable
-                        upButton.setColorFilter(Color.argb(255,255,255,255));
-                        // update the data in our database
-                        updateVotes("reviews", review_id, "upvotes", review.getUpvotes() - 1);
+                    // if item was previously downvoted
+                    if(downvoted) { // update the database to remove a downvote
+                        updateVotes("reviews", review_id, "downvotes", review.getDownvotes() - 1);
+                        // set shared preference so there is no vote
+                        SharedPreferences.Editor prefEditor = myPrefs.edit();
+                        prefEditor.remove(review_id);
+                        prefEditor.apply();
                     }
-                    // set shared preferences so it is downvoted
-                    SharedPreferences.Editor prefEditor = myPrefs.edit();
-                    prefEditor.putInt(review_id, MainActivity.DOWNVOTED);
-                    prefEditor.apply();
-                    downButton.setEnabled(false);  // disable the downvote button
-//                        try {
-//                            curDownvotes = Integer.parseInt(getFieldValue("reviews", review_id, "downvotes"));
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-                    // set downvoted color to blue
-                    // set downvote button to blue as it is now unclickable
-                    downButton.setColorFilter(Color.argb(255,13, 59, 195));
-                    // update the data in our database
-                    updateVotes("reviews", review_id, "downvotes", review.getDownvotes() + 1);
+                    else {  // item was not downvoted
+                        if(upvoted) {   // update the database to remove an upvote
+                            updateVotes("reviews", review_id, "upvotes", review.getUpvotes() - 1);
+                        }
+                        // update the database to add a downvote
+                        updateVotes("reviews", review_id, "downvotes", review.getDownvotes() + 1);
+                        // set shared preferences so it is downvoted
+                        SharedPreferences.Editor prefEditor = myPrefs.edit();
+                        prefEditor.putInt(review_id, MainActivity.DOWNVOTED);
+                        prefEditor.apply();
+                    }
                 }
             });
         }
