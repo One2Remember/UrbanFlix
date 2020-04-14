@@ -177,7 +177,7 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                     }
                 }
             });
-            
+
             /**
              * sets heavily loaded onclick listener to downvote button to behave like a reddit
              * downvote button

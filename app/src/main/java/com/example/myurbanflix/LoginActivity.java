@@ -35,10 +35,17 @@ public class LoginActivity extends AppCompatActivity {
         // set preference editors
         myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         prefEditor = myPrefs.edit();
-        // set warning to invisible
+        initView(); // set warning to invisible
+        mFirestore = FirebaseFirestore.getInstance();   // set up connection to database
+    }
+
+    /**
+     * hides the invalid credentials warning by default
+     * sets the text of username/password field
+     */
+    public void initView() {
         ((TextView)findViewById(R.id.invalid_credentials)).setVisibility(View.INVISIBLE);
-        // set up connection to database
-        mFirestore = FirebaseFirestore.getInstance();
+        ((TextView)findViewById(R.id.textview_username)).setText("Username / Password");
     }
 
     public void goHome() {
