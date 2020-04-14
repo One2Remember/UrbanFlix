@@ -1,5 +1,7 @@
 package com.example.myurbanflix;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.util.ArrayList;
 
 public class  MovieReview {
@@ -11,6 +13,9 @@ public class  MovieReview {
     public String reviewTitle;
     public int upvotes;
     public int downvotes;
+
+    // 2BeFixed
+    String user;
 
 
     /** No argument constructor to allow for deserialization
@@ -26,6 +31,8 @@ public class  MovieReview {
         contents = cont;
         upvotes = 1;
         downvotes = 0;
+
+        user = un;
     }
 
     public void upVote() {
@@ -40,53 +47,54 @@ public class  MovieReview {
 
     public void removeDownVote() {downvotes--; }
 
+    @PropertyName("reviewTitle")
     // return review title
     public String getReviewTitle() {
         return this.reviewTitle;
     }
 
+    @PropertyName("movieName")
     // return name of movie
     public String getMovieName() {
         return this.movieName;
     }
 
+    @PropertyName("movieNameLower")
     public String getMovieNameLower() {
         return this.movieNameLower;
     }
 
+    @PropertyName("userName")
     // return username of review author
-    public String getUser() {
+    public String getUserName() {
         return this.userName;
     }
 
+    @PropertyName("dateCreated")
     public String getDateCreated() {
         return this.dateCreated;
     }
+
+    @PropertyName("contents")
     // return movie review contents
     public String getContents() {
         return this.contents;
     }
 
-    // return number of upvates
+    @PropertyName("upvotes")
+    // return number of upvotes
     public int getUpvotes() {
         return this.upvotes;
     }
 
+    @PropertyName("downvotes")
     public int getDownvotes() {
         return this.downvotes;
     }
 
-    // THIS IS JUST FOR PROOF OF CONCEPT -- RETURNS A GENERIC ARRAYLIST OF MOVIE REVIEWS
-    public static ArrayList<MovieReview> GenerateReviewList() {
-        ArrayList<MovieReview> movieList = new ArrayList<MovieReview>();
-        movieList.add(new MovieReview("Bad film", "Jaws", "gofurkle", "4/11/2020", "When a young woman is killed by a shark while skinny-dipping near the New England tourist town of Amity Island, police chief Martin Brody (Roy Scheider) wants to close the beaches, but mayor Larry Vaughn (Murray Hamilton) overrules him, fearing that the loss of tourist revenue will cripple the town. Ichthyologist Matt Hooper (Richard Dreyfuss) and grizzled ship captain Quint (Robert Shaw) offer to help Brody capture the killer beast, and the trio engage in an epic battle of man vs. nature."));
-        movieList.add(new MovieReview("Okay film", "Up", "gofurkle", "4/11/2020", "Carl Fredricksen, a 78-year-old balloon salesman, is about to fulfill a lifelong dream. Tying thousands of balloons to his house, he flies away to the South American wilderness. But curmudgeonly Carl's worst nightmare comes true when he discovers a little boy named Russell is a stowaway aboard the balloon-powered house. A Pixar animation."));
-        movieList.add(new MovieReview("Great film", "Finding Nemo", "dpatelism", "4/11/2020", "Marlin (Albert Brooks), a clown fish, is overly cautious with his son, Nemo (Alexander Gould), who has a foreshortened fin. When Nemo swims too close to the surface to prove himself, he is caught by a diver, and horrified Marlin must set out to find him. A blue reef fish named Dory (Ellen DeGeneres) -- who has a really short memory -- joins Marlin and complicates the encounters with sharks, jellyfish, and a host of ocean dangers. Meanwhile, Nemo plots his escape from a dentist's fish tank."));
-        movieList.add(new MovieReview("Fantastic film", "Finding Dory", "dpatelism", "4/11/2020", "Dory (Ellen DeGeneres) is a wide-eyed, blue tang fish who suffers from memory loss every 10 seconds or so. The one thing she can remember is that she somehow became separated from her parents as a child. With help from her friends Nemo and Marlin, Dory embarks on an epic adventure to find them. Her journey brings her to the Marine Life Institute, a conservatory that houses diverse ocean species. Dory now knows that her family reunion will only happen if she can save mom and dad from captivity."));
-        movieList.add(new MovieReview("Shitty film", "Lethal Weapon", "dpatelism", "4/11/2020", "Rebooting the hit movie franchise of the same name, \"Lethal Weapon\" is set in modern-day Los Angeles, where Detective Roger Murtaugh works a crime-ridden beat. Some of Murtaugh's colleagues at the LAPD include Detective Bailey, Capt. Brooks Avery, and a pathologist named Scorsese. Murtaugh, married to Trish, and a father of three, finds himself working with Detective Wesley Cole, a former international CIA operative who has been everywhere and seen everything. Cole must adjust to life on the West Coast while navigating his partnership with Murtaugh."));
-        movieList.add(new MovieReview("Yes", "The Emoji Movie", "gofurkle", "4/11/2020", "Wow."));
-        movieList.add(new MovieReview("No", "Free Willy", "one2remember", "4/11/2020", "MJ is a treasure."));
-        movieList.add(new MovieReview("GOAT", "Pan's Labyrinth", "one2remember", "4/11/2020", "GOAT"));
-        return movieList;
+    // 2BeFixed
+    @PropertyName("user")
+    public String getUser() {
+        return this.user;
     }
 }

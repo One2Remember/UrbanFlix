@@ -1,6 +1,5 @@
 package com.example.myurbanflix;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,23 +9,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.content.SharedPreferences;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.SearchView;
-import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 
 /**
@@ -64,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         // set my context for sharing with other non-activity classes
         contextOfApplication = getApplicationContext();
         // declare handle to recyclerView
-        recyclerView = findViewById(R.id.movie_list_recycler);
+        recyclerView = findViewById(R.id.movie_list_recycler_main);
         initFirestore();    // Initialize Firestore
         initView();         // Initialize recycler view, search bar, account button
     }
@@ -166,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
     public static Context getContextOfApplication(){
         return contextOfApplication;
     }
-
 
     /**
      * Attaches a listener to the search bar to send data (query) to new activity:

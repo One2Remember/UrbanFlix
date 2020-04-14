@@ -3,6 +3,8 @@ package com.example.myurbanflix;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,12 +12,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.TextView;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-
 
 /**
  * This is the activity that is opened when a user searches for a particular movie.
@@ -38,6 +40,9 @@ public class MovieSearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_search);
 
+        // Set up the RecyclerView
+        recyclerView = findViewById(R.id.movie_list_recycler_search);
+
         // adds a listener to search bar at the top
         searchBarToMovieSearch();
 
@@ -47,8 +52,8 @@ public class MovieSearchActivity extends AppCompatActivity {
         TextView title = findViewById(R.id.results_for);
         title.setText("Results for: " + message);
 
-        initFirestore();    // Initialize Firestore
-        initRecycler();     // initialize the recycler view
+        initFirestore();
+        initRecycler();
     }
 
     @Override
@@ -67,9 +72,6 @@ public class MovieSearchActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * initialize our connection to the firestore
-     */
     public void initFirestore() {
         mFirestore = FirebaseFirestore.getInstance();
 
@@ -80,13 +82,7 @@ public class MovieSearchActivity extends AppCompatActivity {
                 .orderBy("dateCreated", Query.Direction.DESCENDING).limit(50);
     }
 
-    /**
-     * initialize the recyclerview
-     */
     public void initRecycler() {
-        // Set up the RecyclerView
-        recyclerView = (RecyclerView) findViewById(R.id.movie_list_recycler);
-
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
@@ -104,12 +100,9 @@ public class MovieSearchActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);  // specify an adapter
-        showHideMakeReviewButton(); // hide the create a review button if the user is not logged in
+        // showHideMakeReviewButton(); // hide the create a review button if the user is not logged in
     }
 
-    /**
-     * set make review FAB to visible or invisible depending on user login status
-     */
     public void showHideMakeReviewButton() {
         // get whether user is logged in; if preference does not already exist, assume false
         SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
@@ -166,7 +159,6 @@ public class MovieSearchActivity extends AppCompatActivity {
 
     /**
      * Called when user clicks FAB
-     * @param view
      */
     public void goToCreateReview(View view) {
         Intent intent = new Intent(this, CreateReviewActivity.class);

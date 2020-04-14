@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -67,7 +66,7 @@ public class ViewAccountActivity extends AppCompatActivity {
 
     public void initRecycler() {
         // Set up the RecyclerView
-        recyclerView = (RecyclerView) findViewById(R.id.movie_list_recycler);
+        recyclerView = (RecyclerView) findViewById(R.id.movie_list_recycler_main);
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
