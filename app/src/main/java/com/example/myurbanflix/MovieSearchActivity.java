@@ -51,7 +51,7 @@ public class MovieSearchActivity extends AppCompatActivity {
         TextView title = findViewById(R.id.results_for);
         title.setText("Results for: " + message);
 
-        initFirestore();
+        initFirestore();    // Initialize Firestore
         initRecycler();
     }
 

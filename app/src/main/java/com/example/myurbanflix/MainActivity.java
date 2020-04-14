@@ -29,7 +29,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 
 /**
- * This opens the home page
+ * This opens the home page and makes a connection to the firebase db in order to populate
+ * a local recycler view which the user can interact with. Upvotes and Downvotes are sent
+ * to the database and refreshed locally
  */
 public class MainActivity extends AppCompatActivity {
     // this is for sending a message to movie search from search bar
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         // declare handle to recyclerView
         recyclerView = findViewById(R.id.movie_list_recycler);
         initFirestore();    // Initialize Firestore
-        initView();         // Initialize recycler view
+        initView();         // Initialize recycler view, search bar, account button
     }
 
     /**
