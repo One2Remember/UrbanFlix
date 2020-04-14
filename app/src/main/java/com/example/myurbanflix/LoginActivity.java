@@ -63,42 +63,84 @@ public class LoginActivity extends AppCompatActivity {
         final CollectionReference users = mFirestore.collection("users");
 
         // Query user collection to see if user exists
-        users
-                .whereEqualTo("username", username)
-                .whereEqualTo("password", password)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            boolean MatchingUser = false;
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                MatchingUser = true;
-                            }
-                            // if user matches an entry in database
-                            if(MatchingUser) {
-                                // mark user as logged in locally
-                                prefEditor.putBoolean("LoggedIn", true);
-                                prefEditor.apply();
-                                // save users username locally
-                                prefEditor.putString("UN", username);
-                                prefEditor.apply();
-                                // save users password locally
-                                prefEditor.putString("PW", password);
-                                prefEditor.apply();
-                                // hide warning
-                                ((TextView)findViewById(R.id.invalid_credentials)).setVisibility(View.INVISIBLE);
-                                // Take user home
-                                goHome();
+        // Allows user to log in with username OR email
+        if(username.contains("@")) {
+            users
+                    .whereEqualTo("email", username)
+                    .whereEqualTo("password", password)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                boolean MatchingUser = false;
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    MatchingUser = true;
+
+                                    // if user matches an entry in database
+                                    if (MatchingUser) {
+                                        // mark user as logged in locally
+                                        prefEditor.putBoolean("LoggedIn", true);
+                                        prefEditor.apply();
+                                        // save users username locally
+                                        prefEditor.putString("UN", document.getString("username"));
+                                        Log.d("user", "Username: " + document.getString("userName") );
+                                        prefEditor.apply();
+                                        // save users password locally
+                                        prefEditor.putString("PW", password);
+                                        prefEditor.apply();
+                                        // hide warning
+                                        ((TextView) findViewById(R.id.invalid_credentials)).setVisibility(View.INVISIBLE);
+                                        // Take user home
+                                        goHome();
+                                    } else {
+                                        // show warning that the user does not exist in our database
+                                        ((TextView) findViewById(R.id.invalid_credentials)).setVisibility(View.VISIBLE);
+                                    }
+                                }
                             } else {
-                                // show warning that the user does not exist in our database
-                                ((TextView)findViewById(R.id.invalid_credentials)).setVisibility(View.VISIBLE);
+                                Log.d("query_fail", "Error getting documents: ", task.getException());
                             }
-                        } else {
-                            Log.d("query_fail", "Error getting documents: ", task.getException());
                         }
-                    }
-                });
+                    });
+        } else {
+            users
+                    .whereEqualTo("username", username)
+                    .whereEqualTo("password", password)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                boolean MatchingUser = false;
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    MatchingUser = true;
+                                }
+                                // if user matches an entry in database
+                                if (MatchingUser) {
+                                    // mark user as logged in locally
+                                    prefEditor.putBoolean("LoggedIn", true);
+                                    prefEditor.apply();
+                                    // save users username locally
+                                    prefEditor.putString("UN", username);
+                                    prefEditor.apply();
+                                    // save users password locally
+                                    prefEditor.putString("PW", password);
+                                    prefEditor.apply();
+                                    // hide warning
+                                    ((TextView) findViewById(R.id.invalid_credentials)).setVisibility(View.INVISIBLE);
+                                    // Take user home
+                                    goHome();
+                                } else {
+                                    // show warning that the user does not exist in our database
+                                    ((TextView) findViewById(R.id.invalid_credentials)).setVisibility(View.VISIBLE);
+                                }
+                            } else {
+                                Log.d("query_fail", "Error getting documents: ", task.getException());
+                            }
+                        }
+                    });
+        }
     }
 
     /** Called when user clicks "Create Account" button */
