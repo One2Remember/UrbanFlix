@@ -31,7 +31,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/movie_list_recycler"
+        android:id="@+id/movie_list_recycler_search"
         android:layout_width="403dp"
         android:layout_height="0dp"
         android:layout_marginTop="100dp"

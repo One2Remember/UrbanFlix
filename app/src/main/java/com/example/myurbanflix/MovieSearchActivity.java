@@ -19,8 +19,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 
-import static android.view.View.VISIBLE;
-
 /**
  * This is the activity that is opened when a user searches for a particular movie.
  * String 'message' contains the user query, so what this needs to do is use that query
@@ -41,6 +39,9 @@ public class MovieSearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_search);
+
+        // Set up the RecyclerView
+        recyclerView = findViewById(R.id.movie_list_recycler_search);
 
         // adds a listener to search bar at the top
         searchBarToMovieSearch();
@@ -82,9 +83,6 @@ public class MovieSearchActivity extends AppCompatActivity {
     }
 
     public void initRecycler() {
-        // Set up the RecyclerView
-        recyclerView = (RecyclerView) findViewById(R.id.movie_list_recycler);
-
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
@@ -102,7 +100,7 @@ public class MovieSearchActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);  // specify an adapter
-        showHideMakeReviewButton(); // hide the create a review button if the user is not logged in
+        // showHideMakeReviewButton(); // hide the create a review button if the user is not logged in
     }
 
     public void showHideMakeReviewButton() {
