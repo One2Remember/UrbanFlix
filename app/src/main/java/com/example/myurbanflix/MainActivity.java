@@ -2,6 +2,7 @@ package com.example.myurbanflix;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -154,6 +155,9 @@ public class MainActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);
+
+        recyclerView.addItemDecoration(new DividerItemDecoration(contextOfApplication,
+                DividerItemDecoration.VERTICAL));
     }
 
     /**
