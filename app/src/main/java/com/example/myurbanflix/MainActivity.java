@@ -56,10 +56,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // login user if they have stored credentials
-        loginIfAvailable();
         // grab user preferences
         myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        // login user if they have stored credentials
+        loginIfAvailable();
         // set my context for sharing with other non-activity classes
         contextOfApplication = getApplicationContext();
         // declare handle to recyclerView
