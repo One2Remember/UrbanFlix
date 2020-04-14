@@ -52,7 +52,7 @@ public class MovieSearchActivity extends AppCompatActivity {
         title.setText("Results for: " + message);
 
         initFirestore();    // Initialize Firestore
-        initRecycler();
+        initRecycler();     // initialize the recycler view
     }
 
     @Override
