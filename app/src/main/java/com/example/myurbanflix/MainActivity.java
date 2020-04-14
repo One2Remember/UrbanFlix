@@ -54,17 +54,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // set my context for sharing with other non-activity classes
-        contextOfApplication = getApplicationContext();
-        recyclerView = findViewById(R.id.movie_list_recycler);
-        // grab user preferences
-        myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-
-        initFirestore();    // Initialize Firestore
-        initView(); // Initialize recycler view
-
         // login user if they have stored credentials
         loginIfAvailable();
+        // grab user preferences
+        myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        // set my context for sharing with other non-activity classes
+        contextOfApplication = getApplicationContext();
+        // declare handle to recyclerView
+        recyclerView = findViewById(R.id.movie_list_recycler);
+        initFirestore();    // Initialize Firestore
+        initView();         // Initialize recycler view
     }
 
     /**
@@ -105,6 +104,10 @@ public class MainActivity extends AppCompatActivity {
         setUpAccountButton();   // set login button text based on user logged in status
     }
 
+    /**
+     * initialize our connection to the firestore and set the query which will populate our
+     * recyclerview
+     */
     private void initFirestore() {
         mFirestore = FirebaseFirestore.getInstance();
         // Get reviews from firestore
@@ -133,9 +136,6 @@ public class MainActivity extends AppCompatActivity {
      * set up the recycler view
      */
     public void setUpRecycler() {
-        if(mQuery == null) {
-        }
-
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
@@ -153,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-
         recyclerView.setAdapter(mAdapter);
     }
 
