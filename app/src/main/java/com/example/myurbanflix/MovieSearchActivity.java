@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ public class MovieSearchActivity extends AppCompatActivity {
     private FirebaseFirestore mFirestore;
     private Query mQuery;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,13 +53,11 @@ public class MovieSearchActivity extends AppCompatActivity {
 
         initFirestore();
         initRecycler();
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
         if(mAdapter != null) {
             mAdapter.startListening();
         }
@@ -66,7 +66,6 @@ public class MovieSearchActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-
         if(mAdapter != null) {
             mAdapter.stopListening();
         }
@@ -102,14 +101,8 @@ public class MovieSearchActivity extends AppCompatActivity {
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-
-        // specify an adapter CURRENTLY JUST USES GENERATED DATA SET FROM MovieReview.java
-        // THIS NEEDS TO BE ADAPTED TO USE OUR DATABASE SOMEHOW WITH A QUERY BUILT FROM THE
-        // USERS QUERY ABOVE ^^ CALLED "message"
-        recyclerView.setAdapter(mAdapter);
-
-        // hide the create a review button if the user is not logged in
-        showHideMakeReviewButton();
+        recyclerView.setAdapter(mAdapter);  // specify an adapter
+        showHideMakeReviewButton(); // hide the create a review button if the user is not logged in
     }
 
     public void showHideMakeReviewButton() {
