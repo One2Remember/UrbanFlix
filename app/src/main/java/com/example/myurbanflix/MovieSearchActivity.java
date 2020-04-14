@@ -100,7 +100,7 @@ public class MovieSearchActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);  // specify an adapter
-        // showHideMakeReviewButton(); // hide the create a review button if the user is not logged in
+        showHideMakeReviewButton(); // hide the create a review button if the user is not logged in
     }
 
     public void showHideMakeReviewButton() {

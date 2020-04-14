@@ -68,7 +68,7 @@
         android:tint="#FFFFFF"
         app:backgroundTint="#0D3BC3"
         app:backgroundTintMode="src_over"
-        app:layout_constraintBottom_toBottomOf="@+id/movie_list_recycler"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_input_add" />
 
