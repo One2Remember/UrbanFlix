@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="4dp"
+        android:paddingBottom="3dp"
         android:text="Jaws"
         android:textColor="#0D3BC3"
         android:textSize="20sp"
@@ -25,7 +26,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
+        android:layout_marginBottom="10dp"
+        android:paddingBottom="3dp"
         android:text="Lorem Ipsum Dolor asdlfkjasdklfj"
+        android:textColor="#373636"
         app:layout_constraintBottom_toBottomOf="@+id/author_un"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/review_title" />
