@@ -2,5 +2,7 @@
 <resources>
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorAccent">#E00159BD</color>
+    <color name="PastUFBlue">#E00159BD</color>
+    <color name="UFBlue">#0D3BC3</color>
 </resources>

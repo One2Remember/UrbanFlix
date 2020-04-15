@@ -10,23 +10,23 @@
         android:id="@+id/movie_search"
         android:layout_width="300dp"
         android:layout_height="36dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:queryHint="Movie Title"
         app:layout_constraintEnd_toStartOf="@+id/home_button"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/home_button"
         android:layout_width="90dp"
-        android:layout_height="46dp"
+        android:layout_height="40dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:onClick="goHome"
         android:text="Home"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -65,10 +65,11 @@
         android:clickable="true"
         android:onClick="goToCreateReview"
         android:tint="#FFFFFF"
-        app:backgroundTint="#0D3BC3"
+        app:backgroundTint="#E00159BD"
         app:backgroundTintMode="src_over"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:rippleColor="#E00159BD"
         app:srcCompat="@android:drawable/ic_input_add" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
