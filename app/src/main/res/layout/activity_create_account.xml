@@ -42,15 +42,14 @@ tools:context=".CreateAccountActivity">
         android:inputType="textEmailAddress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.474"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title"
         app:layout_constraintVertical_bias="0.171" />
 
     <TextView
         android:id="@+id/textview_email"
-        android:layout_width="128dp"
-        android:layout_height="19dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:gravity="center"
         android:text="Email Address"
@@ -115,7 +114,7 @@ tools:context=".CreateAccountActivity">
         android:id="@+id/submit_review_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="createAccountThenView"
+        android:onClick="tryCreateAccount"
         android:text="Create Account"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"

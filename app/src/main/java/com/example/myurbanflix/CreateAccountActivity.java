@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -19,35 +20,58 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 /**
- * This defines the Account Creation page (ignore the warning about the missing layout...)
+ * This defines the Account Creation page, which takes input from text fields and compares
+ * to database to ensure no duplicate usernames/emails are being used. If new user fields
+ * are valid, creates a new user and pushes it to the database
  */
 public class CreateAccountActivity extends AppCompatActivity {
     private FirebaseFirestore mFirestore;
     private SharedPreferences myPrefs;
     private SharedPreferences.Editor prefEditor;
+    private EditText emailField;
+    private EditText usernameField;
+    private EditText passwordField;
+    private TextView accWarning;
+    private Button accCreateButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_acc);
+        setContentView(R.layout.activity_create_account);
+        initPreferences();  // Initializes User Preferences
+        initFirestore();    // Initializes Google Firestore Connection
+        initViews();        // initialize views
+    }
 
-        // initialize user preferences
+    /**
+     * initialize user preferences handle
+     */
+    public void initPreferences() {
         myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-        prefEditor = myPrefs.edit();
+    }
 
-        // make warning invisible
-        ((TextView)findViewById(R.id.acc_exists_warning)).setVisibility(View.INVISIBLE);
-
-        // Initializes Firestore
-        initFirestore();
-
-        // Action listener for account creation button
-         final Button accCreateButton = findViewById(R.id.submit_review_button);
-         accCreateButton.setOnClickListener(new View.OnClickListener() {
+    /**
+     * initializes all views on the screen, adding default text as well as listeners and click
+     * methods for buttons and fields as needed
+     */
+    public void initViews() {
+        accWarning = ((TextView)findViewById(R.id.acc_exists_warning));
+        emailField = ((EditText)findViewById(R.id.acc_create_email));
+        usernameField = ((EditText)findViewById(R.id.acc_create_username));
+        passwordField = ((EditText)findViewById(R.id.acc_create_password));
+        accWarning.setVisibility(View.INVISIBLE);   // make warning invisible by default
+        accCreateButton = findViewById(R.id.submit_review_button);  // set create acc button
+        accCreateButton.setOnClickListener(new View.OnClickListener() { // add listener
             @Override
             public void onClick(View v) {
-                onCreateAccountClick();
-           }
+                // Gets a reference to the collection of users in the database
+                final CollectionReference users = mFirestore.collection("users");
+                // Get the user information from text fields
+                final String email = emailField.getText().toString();
+                final String un = usernameField.getText().toString();
+                final String pw = passwordField.getText().toString();
+                tryCreateAccountUN(users, email, un, pw);
+            }
         });
     }
 
@@ -56,10 +80,9 @@ public class CreateAccountActivity extends AppCompatActivity {
      * takes user to account page
      */
     public void setLogInThenView() {
-        // set login to true
-        prefEditor.putBoolean("LoggedIn", true);
-        prefEditor.apply();
-
+        prefEditor = myPrefs.edit();    /// open shared pref editor
+        prefEditor.putBoolean("LoggedIn", true);    // set login to true
+        prefEditor.apply(); // commit changes
         // Take user to View Account Page
         startActivity(new Intent(this, ViewAccountActivity.class));
     }
@@ -68,8 +91,10 @@ public class CreateAccountActivity extends AppCompatActivity {
      * save grabbed fields from username/password into SharedPrefences
      */
     public void saveLoginInfo(String un, String pw) {
+        prefEditor = myPrefs.edit();
         prefEditor.putString("UN", un);
         prefEditor.putString("PW", pw);
+        prefEditor.apply();
     }
 
     /** Called when user taps the Home button */
@@ -85,21 +110,14 @@ public class CreateAccountActivity extends AppCompatActivity {
     }
 
     /**
-     * called when user clicks create account, creates the account if the user does not already
-     * exist, otherwise show warning
+     * called when user clicks create account, if the UN is in use, show warning, else make sure
+     * email is not in use either
      */
-    private void onCreateAccountClick() {
-        // Gets a reference to the collection of users in the database
-        final CollectionReference users = mFirestore.collection("users");
-
-        // Get the user information from text fields
-        final String email = ((TextView)findViewById(R.id.acc_create_email)).getText().toString();
-        final String un = ((TextView)findViewById(R.id.acc_create_username)).getText().toString();
-        final String pw = ((TextView)findViewById(R.id.acc_create_password)).getText().toString();
-
-        // Query user collection to see if user exists
+    private void tryCreateAccountUN(final CollectionReference users, final String email,
+                                    final String username, final String password) {
+        // Query user collection to see if username already exists in database
         users
-            .whereEqualTo("username", un)
+            .whereEqualTo("username", username)
             .get()
             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
@@ -109,20 +127,12 @@ public class CreateAccountActivity extends AppCompatActivity {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             isEmpty = false;
                         }
-                        if(isEmpty) {
-                            // make warning invisible
-                            ((TextView)findViewById(R.id.acc_exists_warning)).setVisibility(View.INVISIBLE);
-                            // Create user
-                            User newUser = new User(email, un, pw);
-                            // Push user to database
-                            users.add(newUser);
-                            // save login info (THIS MAY BE SET TO A TOGGLE BUTTON LATER)
-                            saveLoginInfo(un, pw);
-                            // log in and go to account
-                            setLogInThenView();
-                        } else {
-                            // make warning visible
-                            ((TextView)findViewById(R.id.acc_exists_warning)).setVisibility(View.VISIBLE);
+                        if(isEmpty) {   // if that username is not in use already
+                            accWarning.setVisibility(View.INVISIBLE);   // make warning invisible
+                            tryCreateAccountEmail(users, email, username, password);
+                        } else {    // that username is already in use
+                            accWarning.setVisibility(View.VISIBLE); // make warning visible
+                            accWarning.setText("That username is already in use!");
                         }
                     } else {
                         Log.d("query_fail", "Error getting documents: ", task.getException());
@@ -130,4 +140,40 @@ public class CreateAccountActivity extends AppCompatActivity {
                 }
             });
     }
+
+    /**
+     * called when user clicks create account, if the email is in use, show warning, else
+     * create the new account
+     */
+    private void tryCreateAccountEmail(final CollectionReference users, final String email,
+                                       final String username, final String password) {
+        // Query user collection to see if user email already exists
+        users
+            .whereEqualTo("email", email)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        boolean isEmpty = true;
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            isEmpty = false;
+                        }
+                        if(isEmpty) {   // if that email is not in use already
+                            accWarning.setVisibility(View.INVISIBLE);   // make warning invisible
+                            User newUser = new User(email, username, password); // Create user
+                            users.add(newUser); // Push user to database
+                            saveLoginInfo(username, password);  // save login info
+                            setLogInThenView(); // log in and go to account
+                        } else {
+                            accWarning.setVisibility(View.VISIBLE); // make warning visible
+                            accWarning.setText("That email is already in use!");
+                        }
+                    } else {
+                        Log.d("query_fail", "Error getting documents: ", task.getException());
+                    }
+                }
+            });
+    }
+
 }
