@@ -6,11 +6,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -33,6 +38,13 @@ import java.util.Date;
 public class CreateReviewActivity extends AppCompatActivity {
     private String message; // for holding query if a query brought user here
     private FirebaseFirestore mFirestore;
+    private TextView movieTitleWarn;
+    private TextView reviewTitleWarn;
+    private TextView reviewBodyWarn;
+    private EditText movieTitleField;
+    private EditText reviewTitleField;
+    private EditText commentBodyField;
+    private Button submitReviewButton;
     SharedPreferences myPrefs;
 
     @Override
@@ -43,15 +55,59 @@ public class CreateReviewActivity extends AppCompatActivity {
         myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         // make connection to database
         mFirestore = FirebaseFirestore.getInstance();
-        // get query that brought us here
-        message = getIntent().getStringExtra(MainActivity.SEARCH_MESSAGE);
-        if(message != null) {
-            ((EditText)findViewById(R.id.movie_title_field)).setText(message);
-        }
-        // add listeners for text edit fields
-        addClickListeners();
+        // initialize all views on screen
+        initViews();
     }
 
+    /**
+     * initializes all views on the page programatically including adding text listeners and
+     * properly displaying EditText char limits
+     */
+    public void initViews() {
+        movieTitleWarn = ((TextView)findViewById(R.id.movie_title_warning));
+        reviewTitleWarn = ((TextView)findViewById(R.id.review_title_warning));
+        reviewBodyWarn = ((TextView)findViewById(R.id.review_body_warning));
+        movieTitleField = ((EditText)findViewById(R.id.movie_title_field));
+        reviewTitleField = ((EditText)findViewById(R.id.review_title_field));
+        commentBodyField = ((EditText)findViewById(R.id.comment_body_field));
+        submitReviewButton = ((Button)findViewById(R.id.submit_review_button));
+        // sets default warning limits for text field sizes
+        initWarnings(24, 38, 300);
+        addClickListeners();    // adds on click listeners for focus changes on screen
+        // add listeners for text fields to appropriately display warnings if input is too long
+        addTextFieldLimitListener(movieTitleWarn, movieTitleField, 24); // mov title is 24
+        addTextFieldLimitListener(reviewTitleWarn, reviewTitleField, 38);   // rev is 38
+        addTextFieldLimitListener(reviewBodyWarn, commentBodyField, 300);   // body is 300
+    }
+
+    /**
+     * sets default warning limits for each of the three input fields
+     */
+    public void initWarnings(int mov_title_lim, int rev_title_lim, int body_lim) {
+        processQuery(mov_title_lim);  // populate movie title field if movie query brought us here
+        reviewTitleWarn.setText("0/" + String.valueOf(rev_title_lim));
+        reviewBodyWarn.setText("0/" + String.valueOf(body_lim));
+    }
+
+    /**
+     * processes initial message if intent from search brought us here, adds default text for
+     * text field and populates initial warning
+     */
+    public void processQuery(int mov_title_lim) {
+        // get query that brought us here if came from movie search page
+        message = getIntent().getStringExtra(MainActivity.SEARCH_MESSAGE);
+        if(message != null) {
+            movieTitleField.setText(message);
+            int initSize = message.length();    // get initial size of movie title
+            // edit default text for char count for movie title
+            movieTitleWarn.setText(String.valueOf(initSize) + '/' + String.valueOf(mov_title_lim));
+            if(initSize > 36) { // disable submit button if initial movie title size is too large
+                submitReviewButton.setEnabled(false);   // disable submit review
+            }
+        } else {
+            movieTitleWarn.setText("0/" + String.valueOf(mov_title_lim));
+        }
+    }
     /**
      * for hiding the keyboard when user clicks away from text field
      */
@@ -72,13 +128,42 @@ public class CreateReviewActivity extends AppCompatActivity {
                 }
             }
         });
-        ((EditText)findViewById(R.id.comment_body)).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        ((EditText)findViewById(R.id.comment_body_field)).setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
                     hideKeyboard(v);
                 }
             }
+        });
+    }
+
+    public void addTextFieldLimitListener(final TextView myWarning, final EditText toLimit, final int limit) {
+        toLimit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            /**
+             * Show a warning if text is too long
+             * @param s
+             * @param start
+             * @param before
+             * @param count
+             */
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                myWarning.setText(String.valueOf(toLimit.getText().toString().length()) + '/' + String.valueOf(limit));
+                if(toLimit.getText().length() > limit) {
+                    myWarning.setTextColor(Color.RED); // set warning color
+                    submitReviewButton.setEnabled(false);   // disable submit review
+                } else {
+                    myWarning.setTextColor(Color.parseColor("#0D3BC3")); // set safe color
+                    submitReviewButton.setEnabled(true);   // disable submit review
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { }
         });
     }
 
@@ -113,9 +198,9 @@ public class CreateReviewActivity extends AppCompatActivity {
         String movieTitle, reviewTitle, reviewBody, date, myUN;
         // make connection to database
         // pull data from text fields
-        movieTitle = ((EditText)findViewById(R.id.movie_title_field)).getText().toString();
-        reviewTitle = ((EditText)findViewById(R.id.review_title_field)).getText().toString();
-        reviewBody = ((EditText)findViewById(R.id.comment_body)).getText().toString();
+        movieTitle = movieTitleField.getText().toString();
+        reviewTitle = reviewTitleField.getText().toString();
+        reviewBody = commentBodyField.getText().toString();
         // get username from User Preferences
         myUN = myPrefs.getString("UN", "Admin");
         // get date from java functions

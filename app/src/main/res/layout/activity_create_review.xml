@@ -11,6 +11,28 @@
 
 
     <TextView
+        android:id="@+id/review_body_warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
+        android:text="TextView"
+        android:textColor="#0D3BC3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/comment_body_field" />
+
+    <TextView
+        android:id="@+id/review_title_warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
+        android:text="TextView"
+        android:textColor="#0D3BC3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/review_title_field" />
+
+    <TextView
         android:id="@+id/title"
         android:layout_width="204dp"
         android:layout_height="50dp"
@@ -26,7 +48,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/acc_create_register"
+        android:id="@+id/submit_review_button"
         android:layout_width="85dp"
         android:layout_height="48dp"
         android:layout_marginBottom="40dp"
@@ -43,10 +65,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="44dp"
         android:layout_marginLeft="44dp"
-        android:layout_marginTop="148dp"
+        android:layout_marginTop="20dp"
         android:text="Movie Title: "
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/title" />
 
     <TextView
         android:id="@+id/review_title"
@@ -54,21 +76,21 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="44dp"
         android:layout_marginLeft="44dp"
-        android:layout_marginTop="236dp"
+        android:layout_marginTop="20dp"
         android:text="Review Title: "
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/movie_title_field" />
 
     <TextView
         android:id="@+id/review_body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="320dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginLeft="44dp"
+        android:layout_marginTop="20dp"
         android:text="Review Body: "
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/review_title_field" />
 
     <EditText
         android:id="@+id/movie_title_field"
@@ -77,19 +99,21 @@
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
         android:ems="10"
+        android:hint="Hot Tub Time Machine"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/movie_name" />
 
     <EditText
-        android:id="@+id/comment_body"
+        android:id="@+id/comment_body_field"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
         android:ems="10"
         android:gravity="start|top"
+        android:hint="Something Witty and Insightful"
         android:inputType="textMultiLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -102,9 +126,21 @@
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
         android:ems="10"
+        android:hint="A Good Title"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/review_title" />
+
+    <TextView
+        android:id="@+id/movie_title_warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
+        android:text="TextView"
+        android:textColor="#0D3BC3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/movie_title_field" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

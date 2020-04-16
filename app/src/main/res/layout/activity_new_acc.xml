@@ -112,7 +112,7 @@ tools:context=".CreateAccountActivity">
         app:layout_constraintVertical_bias="0.496" />
 
     <Button
-        android:id="@+id/acc_create_register"
+        android:id="@+id/submit_review_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="createAccountThenView"

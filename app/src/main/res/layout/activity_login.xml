@@ -86,7 +86,7 @@
         app:layout_constraintVertical_bias="0.316" />
 
     <Button
-        android:id="@+id/acc_create_register"
+        android:id="@+id/submit_review_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="login"
@@ -109,7 +109,7 @@
         app:layout_constraintBottom_toTopOf="@+id/back_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/acc_create_register"
+        app:layout_constraintTop_toBottomOf="@+id/submit_review_button"
         app:layout_constraintVertical_bias="0.977" />
 
     <TextView
@@ -123,6 +123,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/acc_create_register" />
+        app:layout_constraintTop_toBottomOf="@+id/submit_review_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

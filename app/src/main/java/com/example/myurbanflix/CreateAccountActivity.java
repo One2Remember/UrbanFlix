@@ -14,9 +14,7 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -44,7 +42,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         initFirestore();
 
         // Action listener for account creation button
-         final Button accCreateButton = findViewById(R.id.acc_create_register);
+         final Button accCreateButton = findViewById(R.id.submit_review_button);
          accCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
