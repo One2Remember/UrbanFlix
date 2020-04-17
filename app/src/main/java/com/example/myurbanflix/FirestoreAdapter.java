@@ -22,21 +22,46 @@ import java.util.ArrayList;
 public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> implements EventListener<QuerySnapshot> {
 
+    /**
+     * Used to label events in Logcat. Allows us to search for errors associated with the adapter.
+     */
     private static final String TAG = "Firestore Adapter";
+
+    /**
+     * Holds the query given to the adapter
+     */
     private Query query;
+
+    /**
+     * Event listener
+     */
     private ListenerRegistration registration;
+
+    /**
+     * List of document snapshots
+     */
     private ArrayList<DocumentSnapshot> snapshots = new ArrayList<>();
 
+    /**
+     * Constructor that sets the query for adapter
+     * @param query
+     */
     public FirestoreAdapter(Query query) {
         this.query = query;
     }
 
+    /**
+     * Add listener to query
+     */
     public void startListening() {
         if (query != null && registration == null) {
             registration = query.addSnapshotListener(this);
         }
     }
 
+    /**
+     * Remove listener from query
+     */
     public void stopListening() {
         if (registration != null) {
             registration.remove();
@@ -46,6 +71,10 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         notifyDataSetChanged();
     }
 
+    /**
+     * Update query
+     * @param query
+     */
     public void setQuery(Query query) {
         stopListening();    // Stop listening
         snapshots.clear();  // Clear existing data
@@ -54,26 +83,50 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         startListening();
     }
 
+    /**
+     * Gets the size of the document snapshot ArrayList
+     * @return
+     */
     @Override
     public int getItemCount() {
         return snapshots.size();
     }
 
+    /**
+     * Return document snapshot at given index
+     * @param index
+     * @return
+     */
     protected DocumentSnapshot getSnapshot(int index) {
         return snapshots.get(index);
     }
 
+    /**
+     * Template function to do something when modifying the document snapshots returns an error. Override when new instance of adapter is instantiated
+     * @param e
+     */
     protected void onError(FirebaseFirestoreException e) {
     }
 
+    /**
+     * Template function to do something when data on the document snapshot is modified. Override when new instance of Adapter is instantiated.
+     */
     protected void onDataChanged() {
     }
 
+    /**
+     * Updates document snapshot list when a document has been added and updates indices
+     * @param change
+     */
     protected void onDocumentAdded(DocumentChange change) {
         snapshots.add(change.getNewIndex(), change.getDocument());
         notifyItemInserted(change.getNewIndex());
     }
 
+    /**
+     * Updates document snapshot when it has been modified, indices remain unchanged
+     * @param change
+     */
     protected void onDocumentModified(DocumentChange change) {
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
@@ -87,11 +140,20 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         }
     }
 
+    /**
+     * Updates document snapshot list when a document is removed and updates indices
+     * @param change
+     */
     protected void onDocumentRemoved(DocumentChange change) {
         snapshots.remove(change.getOldIndex());
         notifyItemRemoved(change.getOldIndex());
     }
 
+    /**
+     * Puts the onDocumentXXX functions together into an onEvent handler
+     * @param documentSnapshots
+     * @param e
+     */
     @Override
     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
         // Handle errors
