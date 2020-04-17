@@ -14,14 +14,17 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
+/**
+ * Class is used as a firebase adapter which wraps around recyclerview.adapter and optimizes
+ * recycler for user with google firebase
+ * @param <VH>
+ */
 public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> implements EventListener<QuerySnapshot> {
 
     private static final String TAG = "Firestore Adapter";
-
     private Query query;
     private ListenerRegistration registration;
-
     private ArrayList<DocumentSnapshot> snapshots = new ArrayList<>();
 
     public FirestoreAdapter(Query query) {
@@ -39,21 +42,15 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
             registration.remove();
             registration = null;
         }
-
         snapshots.clear();
         notifyDataSetChanged();
     }
 
     public void setQuery(Query query) {
-        // Stop listening
-        stopListening();
-
-        // Clear existing data
-        snapshots.clear();
+        stopListening();    // Stop listening
+        snapshots.clear();  // Clear existing data
         notifyDataSetChanged();
-
-        // Listen to new query
-        this.query = query;
+        this.query = query; // Listen to new query
         startListening();
     }
 
@@ -107,7 +104,6 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         for (DocumentChange change : documentSnapshots.getDocumentChanges()) {
             // Snapshot of the changed document
             DocumentSnapshot snapshot = change.getDocument();
-
             switch (change.getType()) {
                 case ADDED:
                     // TODO: handle document added
