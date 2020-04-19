@@ -31,8 +31,10 @@ import com.google.firebase.firestore.Query;
  * the ViewAccountActivity, which we do not want to be able to mutate reviews
  */
 public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.ViewHolder> {
-
-    private boolean enable_buttons; // local field for storing if buttons should be enabled
+    /**
+     * local field for storing if buttons should be enabled
+     */
+    private boolean enable_buttons;
 
     /**
      * Constructor which initializes the moviereviewadapter
@@ -44,8 +46,13 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
         enable_buttons = EnableButtons;
     }
 
-
-
+    /**
+     * when a view holder is created, this takes its parent inflator and returns a new viewholder
+     * containing the information needed to inflate the view
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -53,24 +60,60 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
         return new ViewHolder(inflater.inflate(R.layout.movie_review_view, parent, false));
     }
 
+    /**
+     * when view holder is bound, gives holder document snapshot as well as a boolean value telling
+     * it whether it needs to enable the buttons on that view (usually based on user login status)
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.bind(getSnapshot(position), enable_buttons);
     }
 
     /**
-     * grabs handles to local textviews
+     * This subclass is used in order to take empty views, inflate them with data from a document
+     * within a query (in our case), and pass them back to the adapter
      */
     static class ViewHolder extends RecyclerView.ViewHolder {
+        /**
+         * holds a handle to the textview storing the movie name
+         */
         public TextView movieName;
+        /**
+         * holds a handle to the textview storing the review contents
+         */
         public TextView reviewContents;
+        /**
+         * holds a handle to the textview storing the review author
+         */
         public TextView reviewAuthor;
+        /**
+         * holds a handle to the textview storing the review title
+         */
         public TextView reviewTitle;
+        /**
+         * holds a handle to the textview storing the date
+         */
         public TextView date;
+        /**
+         * holds a handle to the textview storing the value of upvotes - downvotes
+         */
         public TextView upValue;
+        /**
+         * holds a handle to the upvote button
+         */
         public ImageButton upButton;
+        /**
+         * holds a handle to the downvote button
+         */
         public ImageButton downButton;
 
+        /**
+         * constructor takes our view to be inflated for the recyclerview, grabs all the necessary
+         * elements on the page for easy reference throughout the rest of the adapter
+         * @param itemView
+         */
         public ViewHolder(View itemView) {
             super(itemView);
             movieName = (TextView) itemView.findViewById(R.id.movie_name);
@@ -92,7 +135,6 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
         public void bind(final DocumentSnapshot snapshot, final boolean enable_buttons) {
             MovieReview review = snapshot.toObject(MovieReview.class);
             Resources resources = itemView.getResources();
-
             movieName.setText(review.getMovieName());
             reviewContents.setText(review.getContents());
             reviewAuthor.setText(review.getUserName());
@@ -150,7 +192,12 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
 
             /**
              * sets heavily loaded onclick listener to upvote button to behave like a reddit
-             * upvote button
+             * upvote button:
+             *    if upvoted prior, removes upvote
+             *    elif downvoted prior, removes downvote and changes to upvote
+             *    else adds an upvote
+             * in all cases this updates shared preferences (to disallow repeat votes) and updates
+             * the database appropriately for all three cases
              */
             upButton.setOnClickListener( new View.OnClickListener() {
                 public void onClick(View v) {
@@ -180,7 +227,12 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
 
             /**
              * sets heavily loaded onclick listener to downvote button to behave like a reddit
-             * downvote button
+             * downvote button:
+             *    if downvoted prior, removes downvote
+             *    elif upvoted prior, removes upvote and changes to downvote
+             *    else adds a downvote
+             * in all cases this updates shared preferences (to disallow repeat votes) and updates
+             * the database appropriately for all three cases
              */
             downButton.setOnClickListener( new View.OnClickListener() {
                 // grab a reference to our review for easy field checking

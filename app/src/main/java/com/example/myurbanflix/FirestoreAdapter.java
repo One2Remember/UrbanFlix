@@ -28,7 +28,7 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
     private static final String TAG = "Firestore Adapter";
 
     /**
-     * Holds the query given to the adapter
+     * Holds the query given to the adapter in order to populate its data
      */
     private Query query;
 
@@ -38,12 +38,12 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
     private ListenerRegistration registration;
 
     /**
-     * List of document snapshots
+     * List of document snapshots generated from query to database
      */
     private ArrayList<DocumentSnapshot> snapshots = new ArrayList<>();
 
     /**
-     * Constructor that sets the query for adapter
+     * Constructor that sets the query for the adapter
      * @param query
      */
     public FirestoreAdapter(Query query) {
@@ -102,14 +102,16 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
     }
 
     /**
-     * Template function to do something when modifying the document snapshots returns an error. Override when new instance of adapter is instantiated
+     * Template function to do something when modifying the document snapshots returns an error.
+     * Override when new instance of adapter is instantiated
      * @param e
      */
     protected void onError(FirebaseFirestoreException e) {
     }
 
     /**
-     * Template function to do something when data on the document snapshot is modified. Override when new instance of Adapter is instantiated.
+     * Template function to do something when data on the document snapshot is modified.
+     * Override when new instance of Adapter is instantiated.
      */
     protected void onDataChanged() {
     }
@@ -161,7 +163,6 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
             Log.w(TAG, "onEvent:error", e);
             return;
         }
-
         // Dispatch event
         for (DocumentChange change : documentSnapshots.getDocumentChanges()) {
             // Snapshot of the changed document

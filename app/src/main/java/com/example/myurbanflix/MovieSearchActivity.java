@@ -21,41 +21,67 @@ import com.google.firebase.firestore.Query;
 
 /**
  * This is the activity that is opened when a user searches for a particular movie.
- * String 'message' contains the user query, so what this needs to do is use that query
+ * String 'message' contains the user query, so this activity uses that query
  * to populate from our database a recycler view containing movie titles that match that query
  */
 public class MovieSearchActivity extends AppCompatActivity {
-    // these are for use with the recycler view
+    /**
+     * a handle to the recycler view in the layout (contains review data)
+     */
     private RecyclerView recyclerView;
+    /**
+     * a handle to the adapter which is used to inflate views to populate the recycler view
+     */
     private MovieReviewAdapter mAdapter;
+    /**
+     * a handle to the layout manager which the recyclerview uses to display the views once
+     * they are inflated
+     */
     private RecyclerView.LayoutManager layoutManager;
-    private String message; // for holding user query that got user to this page
-
+    /**
+     * for holding user query that got user to this page
+     */
+    private String message;
+    /**
+     * A handle to the firestore connection so it need only be instantiated once
+     */
     private FirebaseFirestore mFirestore;
+    /**
+     * for storing the query used to populate the recycler view
+     */
     private Query mQuery;
 
+    /**
+     * grabs the query that brought the user here, uses it to initialize a connection to the
+     * firestore and generate a query, then initializes all views (including the recyclerview)
+     * @param savedInstanceState
+     */
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_search);
-
-        // Set up the RecyclerView
-        recyclerView = findViewById(R.id.movie_list_recycler_search);
-
-        // adds a listener to search bar at the top
-        searchBarToMovieSearch();
-
         // Get the Intent that started this activity and extract the query message
         message = getIntent().getStringExtra(MainActivity.SEARCH_MESSAGE);
-        // Set title of page based on user query (this is all we're doing with the query right now)
-        TextView title = findViewById(R.id.results_for);
-        title.setText("Results for: " + message);
-
-        initFirestore();
-        initRecycler();
+        initFirestore();    // init connection to firestore
+        initViews();    // initialize all views (including recycler) in the activity
     }
 
+    /**
+     * sets the title bar (results for: [query]), adds a listener to the search bar so user
+     * can make a new search, inits the recyclerview to display reviews that match the user's
+     * query
+     */
+    private void initViews() {
+        TextView title = findViewById(R.id.results_for);    // grab handle to the page title
+        title.setText("Results for: " + message);   // set the title of the page based on user query
+        searchBarToMovieSearch();   // adds a listener to search bar at the top
+        initRecycler(); // initializes the recycler view
+    }
+
+    /**
+     * for the recycler view to know to listen to db and user input on activity start
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -64,6 +90,9 @@ public class MovieSearchActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * for the recycler view to know to stop listening to db and user input on activity end
+     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -72,9 +101,12 @@ public class MovieSearchActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * initializes a connection to the firestore and generates a query to the store based on the
+     * user's search (case insensitive) and displays them newest->oldest
+     */
     public void initFirestore() {
         mFirestore = FirebaseFirestore.getInstance();
-
         // Get reviews from firestore
         // .orderBy("criteria", Query.Direction.{ASCENDING | DESCENDING})
         // .limit(int) will limit the number of reviews pulled from firestore
@@ -82,11 +114,14 @@ public class MovieSearchActivity extends AppCompatActivity {
                 .orderBy("dateCreated", Query.Direction.DESCENDING).limit(50);
     }
 
+    /**
+     * initializes the recycler view used to display the movie reviews that match the user's
+     * query (which is grabbed in the initFirestore() method above)
+     */
     public void initRecycler() {
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
+        // Set up the RecyclerView
+        recyclerView = findViewById(R.id.movie_list_recycler_search);
         recyclerView.setHasFixedSize(true);
-
         mAdapter = new MovieReviewAdapter(mQuery, true) {
             @Override
             protected void onError(FirebaseFirestoreException e) {
@@ -95,7 +130,6 @@ public class MovieSearchActivity extends AppCompatActivity {
                         "Error: check logs for info.", Snackbar.LENGTH_LONG).show();
             }
         };
-
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -103,6 +137,9 @@ public class MovieSearchActivity extends AppCompatActivity {
         showHideMakeReviewButton(); // hide the create a review button if the user is not logged in
     }
 
+    /**
+     * show or hides the FAB that allows user to create a review based on their logged_in status
+     */
     public void showHideMakeReviewButton() {
         // get whether user is logged in; if preference does not already exist, assume false
         SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
@@ -158,7 +195,8 @@ public class MovieSearchActivity extends AppCompatActivity {
     }
 
     /**
-     * Called when user clicks FAB
+     * Called when user clicks FAB (goes to the create review activity)
+     * @param view
      */
     public void goToCreateReview(View view) {
         Intent intent = new Intent(this, CreateReviewActivity.class);

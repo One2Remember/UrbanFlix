@@ -27,36 +27,71 @@ import com.google.firebase.firestore.Query;
  * to the database and refreshed locally
  */
 public class MainActivity extends AppCompatActivity {
-    // this is for sending a message to movie search from search bar
+    /**
+     * this is for sending a query message to movie search activity from search bar
+     */
     public static final String SEARCH_MESSAGE = "com.example.myurbanflix.MESSAGE";
+    /**
+     * functions as a global const for more readable code in db operations
+     */
     public static final int UPVOTED = 1;
+    /**
+     * functions as a global const for more readable code in db operations
+     */
     public static final int DOWNVOTED = -1;
+    /**
+     * functions as a global const for more readable code in db operations
+     */
     public static final int NOTVOTED = 0;
-    // these are for use with the recycler view
+    /**
+     * a handle to the recycler view in the layout (contains review data)
+     */
     private RecyclerView recyclerView;
-    // private RecyclerView.Adapter mAdapter;
+    /**
+     * a handle to the adapter which is used to inflate views to populate the recycler view
+     */
     private MovieReviewAdapter mAdapter;
+    /**
+     * a handle to the layout manager which the recyclerview uses to display the views once
+     * they are inflated
+     */
     private RecyclerView.LayoutManager layoutManager;
-    // for non-activity classes to access shared user prefs
+    /**
+     * for non-activity classes to access shared user prefs, we allow them to pretend they are
+     * operating within the context of the main activity
+     */
     public static Context contextOfApplication;
-    SharedPreferences myPrefs;
-    SharedPreferences.Editor prefEditor;
-
+    /**
+     * For instantiating shared preferences
+     */
+    private SharedPreferences myPrefs;
+    /**
+     * For instantiating shared preferences editor
+     */
+    private SharedPreferences.Editor prefEditor;
+    /**
+     * A handle to the firestore connection so it need only be instantiated once
+     */
     private FirebaseFirestore mFirestore;
+    /**
+     *
+     */
     private Query mQuery;
 
+    /**
+     * grabs user preferences, logs in the user if they have stored login credentials, grabs a
+     * handle to this activity's context so that MovieReview and User classes may access shared
+     * preferences as needed (w/o a context), initialize connection to database, initialize all
+     * views on the screen
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // grab user preferences
-        myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-        // login user if they have stored credentials
-        loginIfAvailable();
-        // set my context for sharing with other non-activity classes
-        contextOfApplication = getApplicationContext();
-        // declare handle to recyclerView
-        recyclerView = findViewById(R.id.movie_list_recycler_main);
+        contextOfApplication = getApplicationContext(); // set context for sharing w/non-activities
+        myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);   // grab user prefs
+        loginIfAvailable(); // login user if they have stored credentials
         initFirestore();    // Initialize Firestore
         initView();         // Initialize recycler view, search bar, account button
     }
@@ -73,7 +108,9 @@ public class MainActivity extends AppCompatActivity {
         }
         prefEditor.apply();
     }
-
+    /**
+     * for the recycler view to know to listen to db and user input on activity start
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -81,7 +118,9 @@ public class MainActivity extends AppCompatActivity {
             mAdapter.startListening();
         }
     }
-
+    /**
+     * for the recycler view to know to stop listening to db and user input on activity end
+     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -91,9 +130,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * initialize various components within the view
+     * initialize various view components within the activity
      */
     public void initView() {
+        recyclerView = findViewById(R.id.movie_list_recycler_main); // declare handle to recyclerView
         searchBarToMovieSearch();   // adds a listener to search bar
         setUpRecycler();    // set up recycler view
         setUpButtons();     // set login and fab button based on user logged in status
@@ -113,7 +153,8 @@ public class MainActivity extends AppCompatActivity {
                 .limit(50);
     }
     /**
-     * sets account button to say either account or login based on login status
+     * sets account button to say either account or login based on login status, also enables
+     * or disables the FAB for adding a review to keep non-logged users from writing reviews
      */
     public void setUpButtons() {
         boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);

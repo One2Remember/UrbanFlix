@@ -25,15 +25,44 @@ import com.google.firebase.firestore.QuerySnapshot;
  * are valid, creates a new user and pushes it to the database
  */
 public class CreateAccountActivity extends AppCompatActivity {
+    /**
+     * A handle to the firestore connection so it need only be instantiated once
+     */
     private FirebaseFirestore mFirestore;
+    /**
+     * For instantiating shared preferences
+     */
     private SharedPreferences myPrefs;
+    /**
+     * For instantiating shared preferences editor
+     */
     private SharedPreferences.Editor prefEditor;
+    /**
+     * a handle to the edit text field for the email address, for reading user input
+     */
     private EditText emailField;
+    /**
+     * a handle to the edit text field for the user name, for reading user input
+     */
     private EditText usernameField;
+    /**
+     * a handle to the edit text field for the password, for reading user input
+     */
     private EditText passwordField;
+    /**
+     * a handle to the textview in the case that the credentials provided are already in use in
+     * the database
+     */
     private TextView accWarning;
+    /**
+     * a handle to the account create button, to give it functionality
+     */
     private Button accCreateButton;
 
+    /**
+     * initializes user preferences, google firestore connection, and all views on the page
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

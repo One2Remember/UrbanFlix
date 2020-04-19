@@ -33,20 +33,63 @@ import java.util.Date;
  * This class manages the Create Review Activity using Firestore, in which users can create
  * reviews if they are logged in, and push those reviews to the firestore. This class takes
  * care of autopopulating some data like username and date, and suggests a field for the
- * name of the movie depending on the query that brought it here
+ * name of the movie depending on the query that brought it here. It also enforces strict
+ * character limits for all fields to ensure the formatting looks nice in the app
  */
 public class CreateReviewActivity extends AppCompatActivity {
-    private String message; // for holding query if a query brought user here
+    /**
+     * for holding query if a search bar search brought the user here
+     */
+    private String message;
+    /**
+     * A handle to the firestore connection so it need only be instantiated once
+     */
     private FirebaseFirestore mFirestore;
+    /**
+     * a handle to the textview which warns the viewer if they are approaching the character limit
+     * for the movie title
+     */
     private TextView movieTitleWarn;
+    /**
+     * a handle to the textview which warns the viewer if they are approaching the character limit
+     * for the review title
+     */
     private TextView reviewTitleWarn;
+    /**
+     * a handle to the textview which warns the viewer if they are approaching the character limit
+     * for the review comment body
+     */
     private TextView reviewBodyWarn;
+    /**
+     * a handle to the edittext field for the movie title to check user's input
+     */
     private EditText movieTitleField;
+    /**
+     * a handle to the edittext field for the review title to check user's input
+     */
     private EditText reviewTitleField;
+    /**
+     * a handle to the edittext field for the review body to check user's input
+     */
     private EditText commentBodyField;
+    /**
+     * a handle to the submit review button in order to enable/disable it as needed
+     */
     private Button submitReviewButton;
-    SharedPreferences myPrefs;
+    /**
+     * For instantiating shared preferences
+     */
+    private SharedPreferences myPrefs;
+    /**
+     * For instantiating shared preferences editor
+     */
+    private SharedPreferences.Editor prefEditor;
 
+    /**
+     * grabs handle to shared preferences, makes connection to firebase, and initializes all views
+     * on the page to give them functionality
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,6 +183,13 @@ public class CreateReviewActivity extends AppCompatActivity {
 
     public void addTextFieldLimitListener(final TextView myWarning, final EditText toLimit, final int limit) {
         toLimit.addTextChangedListener(new TextWatcher() {
+            /**
+             * undefined behavior, not needed for project (included only because it is necessary)
+             * @param s
+             * @param start
+             * @param count
+             * @param after
+             */
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
@@ -162,6 +212,10 @@ public class CreateReviewActivity extends AppCompatActivity {
                 }
             }
 
+            /**
+             * undefined behavior, not needed for project (included only because it is necessary)
+             * @param s
+             */
             @Override
             public void afterTextChanged(Editable s) { }
         });
@@ -184,9 +238,13 @@ public class CreateReviewActivity extends AppCompatActivity {
         Date date = new Date();
         return dateFormat.format(date);
     }
-    //mark it as upvoted in user preferences
+
+    /**
+     * mark a review as upvoted in user preferences by review key (provided by the firestore)
+     * @param key
+     */
     public void updateUserPreference(String key) {
-        SharedPreferences.Editor prefEditor = myPrefs.edit();
+        prefEditor = myPrefs.edit();
         prefEditor.putInt(key, MainActivity.UPVOTED);
         prefEditor.apply();
     }

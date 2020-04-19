@@ -21,13 +21,30 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 /**
- * This defines the Login Activity
+ * This defines the Login Activity page, which allows the user to input their credentials, and
+ * if they match, logs the user in and returns them home. Logging in allows the users to view
+ * their profiles (post history) as well as upvote, downvote, and create reviews. The page also
+ * contains a link to the create account page if the user does not have an account yet
  */
 public class LoginActivity extends AppCompatActivity {
-    SharedPreferences myPrefs;
-    SharedPreferences.Editor prefEditor;
+    /**
+     * For instantiating shared preferences
+     */
+    private SharedPreferences myPrefs;
+    /**
+     * For instantiating shared preferences editor
+     */
+    private SharedPreferences.Editor prefEditor;
+    /**
+     * A handle to the firestore connection so it need only be instantiated once
+     */
     private FirebaseFirestore mFirestore;
 
+    /**
+     * When activity is created, initializes all views on the page, makes connection to firestore,
+     * and pulls down handles to shared preferences
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,17 +65,26 @@ public class LoginActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.textview_username)).setText("Username / Password");
     }
 
+    /**
+     * takes user home when they click the login button
+     */
     public void goHome() {
         startActivity(new Intent(this, MainActivity.class));
     }
 
-    // hides keyboard when user clicks out of text edit
+    /**
+     * hides keyboard when user clicks out of text edit
+     * @param view
+     */
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    /** Called when the user taps the Login button, logs in and takes user home */
+    /**
+     * Called when the user taps the Login button, logs in (if credentials are valid) and takes
+     * the user to the home page
+     */
     public void login(View view) {
         hideKeyboard(view); // hide the keyboard
 
@@ -150,7 +176,9 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    /** Called when user clicks "Create Account" button */
+    /**
+     * Called when user clicks "Create Account" button
+     */
     public void goToCreateAcc(View view) {
         startActivity(new Intent(this, CreateAccountActivity.class));
     }
