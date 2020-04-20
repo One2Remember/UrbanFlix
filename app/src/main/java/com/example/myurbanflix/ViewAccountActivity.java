@@ -3,12 +3,10 @@ package com.example.myurbanflix;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -104,7 +102,7 @@ public class ViewAccountActivity extends AppCompatActivity {
      */
     public void initRecycler() {
         // Set up the RecyclerView
-        recyclerView = (RecyclerView) findViewById(R.id.movie_list_recycler_main);
+        recyclerView = findViewById(R.id.movie_list_recycler_main);
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);

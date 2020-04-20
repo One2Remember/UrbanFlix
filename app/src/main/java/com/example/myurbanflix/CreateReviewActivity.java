@@ -2,7 +2,6 @@ package com.example.myurbanflix;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,14 +15,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -107,13 +104,13 @@ public class CreateReviewActivity extends AppCompatActivity {
      * properly displaying EditText char limits
      */
     public void initViews() {
-        movieTitleWarn = ((TextView)findViewById(R.id.movie_title_warning));
-        reviewTitleWarn = ((TextView)findViewById(R.id.review_title_warning));
-        reviewBodyWarn = ((TextView)findViewById(R.id.review_body_warning));
-        movieTitleField = ((EditText)findViewById(R.id.movie_title_field));
-        reviewTitleField = ((EditText)findViewById(R.id.review_title_field));
-        commentBodyField = ((EditText)findViewById(R.id.comment_body_field));
-        submitReviewButton = ((Button)findViewById(R.id.submit_review_button));
+        movieTitleWarn = findViewById(R.id.movie_title_warning);
+        reviewTitleWarn = findViewById(R.id.review_title_warning);
+        reviewBodyWarn = findViewById(R.id.review_body_warning);
+        movieTitleField = findViewById(R.id.movie_title_field);
+        reviewTitleField = findViewById(R.id.review_title_field);
+        commentBodyField = findViewById(R.id.comment_body_field);
+        submitReviewButton = findViewById(R.id.submit_review_button);
         // sets default warning limits for text field sizes
         initWarnings(24, 38, 300);
         addClickListeners();    // adds on click listeners for focus changes on screen
@@ -128,8 +125,8 @@ public class CreateReviewActivity extends AppCompatActivity {
      */
     public void initWarnings(int mov_title_lim, int rev_title_lim, int body_lim) {
         processQuery(mov_title_lim);  // populate movie title field if movie query brought us here
-        reviewTitleWarn.setText("0/" + String.valueOf(rev_title_lim));
-        reviewBodyWarn.setText("0/" + String.valueOf(body_lim));
+        reviewTitleWarn.setText("0/" + rev_title_lim);
+        reviewBodyWarn.setText("0/" + body_lim);
     }
 
     /**
@@ -143,19 +140,19 @@ public class CreateReviewActivity extends AppCompatActivity {
             movieTitleField.setText(message);
             int initSize = message.length();    // get initial size of movie title
             // edit default text for char count for movie title
-            movieTitleWarn.setText(String.valueOf(initSize) + '/' + String.valueOf(mov_title_lim));
+            movieTitleWarn.setText(String.valueOf(initSize) + '/' + mov_title_lim);
             if(initSize > 36) { // disable submit button if initial movie title size is too large
                 submitReviewButton.setEnabled(false);   // disable submit review
             }
         } else {
-            movieTitleWarn.setText("0/" + String.valueOf(mov_title_lim));
+            movieTitleWarn.setText("0/" + mov_title_lim);
         }
     }
     /**
      * for hiding the keyboard when user clicks away from text field
      */
     public void addClickListeners() {
-        ((EditText)findViewById(R.id.movie_title_field)).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        findViewById(R.id.movie_title_field).setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
@@ -163,7 +160,7 @@ public class CreateReviewActivity extends AppCompatActivity {
                 }
             }
         });
-        ((EditText)findViewById(R.id.review_title_field)).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        findViewById(R.id.review_title_field).setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
@@ -171,7 +168,7 @@ public class CreateReviewActivity extends AppCompatActivity {
                 }
             }
         });
-        ((EditText)findViewById(R.id.comment_body_field)).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        findViewById(R.id.comment_body_field).setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
@@ -202,7 +199,7 @@ public class CreateReviewActivity extends AppCompatActivity {
              */
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                myWarning.setText(String.valueOf(toLimit.getText().toString().length()) + '/' + String.valueOf(limit));
+                myWarning.setText(String.valueOf(toLimit.getText().toString().length()) + '/' + limit);
                 if(toLimit.getText().length() > limit) {
                     myWarning.setTextColor(Color.RED); // set warning color
                     submitReviewButton.setEnabled(false);   // disable submit review

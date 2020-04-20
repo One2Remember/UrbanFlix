@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,8 +12,6 @@ import android.view.View;
 import android.content.SharedPreferences;
 import android.widget.Button;
 import android.widget.SearchView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -74,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private FirebaseFirestore mFirestore;
     /**
-     *
+     * For holding the query used to populate the recycler view from the db
      */
     private Query mQuery;
 
@@ -160,11 +157,11 @@ public class MainActivity extends AppCompatActivity {
         boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
         if(loggedIn) {
             ((Button)findViewById(R.id.login)).setText("Account");
-            ((FloatingActionButton)findViewById(R.id.create_review_main)).setVisibility(View.VISIBLE);
+            findViewById(R.id.create_review_main).setVisibility(View.VISIBLE);
         }
         else {
             ((Button)findViewById(R.id.login)).setText("Login");
-            ((FloatingActionButton)findViewById(R.id.create_review_main)).setVisibility(View.INVISIBLE);
+            findViewById(R.id.create_review_main).setVisibility(View.INVISIBLE);
         }
     }
 
@@ -207,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
      * MovieSearchActivity
      */
     public void searchBarToMovieSearch() {
-        final SearchView searchView = (SearchView)findViewById(R.id.movie_search);
+        final SearchView searchView = findViewById(R.id.movie_search);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             // when the user hits enter this will call callSearch(query) which I define below
             @Override

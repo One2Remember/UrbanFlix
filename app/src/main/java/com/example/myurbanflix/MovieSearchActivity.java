@@ -3,8 +3,6 @@ package com.example.myurbanflix;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,8 +10,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.TextView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -145,10 +141,10 @@ public class MovieSearchActivity extends AppCompatActivity {
         SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
         if(loggedIn) {
-            ((FloatingActionButton)findViewById(R.id.add_button)).setVisibility(View.VISIBLE);
+            findViewById(R.id.add_button).setVisibility(View.VISIBLE);
         }
         else {
-            ((FloatingActionButton)findViewById(R.id.add_button)).setVisibility(View.INVISIBLE);
+            findViewById(R.id.add_button).setVisibility(View.INVISIBLE);
         }
     }
 
@@ -157,7 +153,7 @@ public class MovieSearchActivity extends AppCompatActivity {
      * MovieSearchActivity
      */
     public void searchBarToMovieSearch() {
-        final SearchView searchView = (SearchView)findViewById(R.id.movie_search);
+        final SearchView searchView = findViewById(R.id.movie_search);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             // when the user hits enter this will call callSearch(query) which I define below
             @Override

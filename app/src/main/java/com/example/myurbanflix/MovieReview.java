@@ -2,8 +2,6 @@ package com.example.myurbanflix;
 
 import com.google.firebase.firestore.PropertyName;
 
-import java.util.ArrayList;
-
 /**
  * Defines a Movie Review for the purpose of pushing a review remotely to the database. The DB
  * is able to parse Java objects, and thus we pass to it review objects generated in the

@@ -2,7 +2,6 @@ package com.example.myurbanflix;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -84,10 +82,10 @@ public class CreateAccountActivity extends AppCompatActivity {
      * methods for buttons and fields as needed
      */
     public void initViews() {
-        accWarning = ((TextView)findViewById(R.id.acc_exists_warning));
-        emailField = ((EditText)findViewById(R.id.acc_create_email));
-        usernameField = ((EditText)findViewById(R.id.acc_create_username));
-        passwordField = ((EditText)findViewById(R.id.acc_create_password));
+        accWarning = findViewById(R.id.acc_exists_warning);
+        emailField = findViewById(R.id.acc_create_email);
+        usernameField = findViewById(R.id.acc_create_username);
+        passwordField = findViewById(R.id.acc_create_password);
         accWarning.setVisibility(View.INVISIBLE);   // make warning invisible by default
         accCreateButton = findViewById(R.id.submit_review_button);  // set create acc button
         accCreateButton.setOnClickListener(new View.OnClickListener() { // add listener

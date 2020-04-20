@@ -8,13 +8,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -116,14 +113,14 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
          */
         public ViewHolder(View itemView) {
             super(itemView);
-            movieName = (TextView) itemView.findViewById(R.id.movie_name);
-            reviewContents = (TextView) itemView.findViewById(R.id.review_contents);
-            reviewAuthor = (TextView) itemView.findViewById(R.id.author_un);
-            reviewTitle = (TextView) itemView.findViewById(R.id.review_title);
-            date = (TextView) itemView.findViewById(R.id.date_created);
-            upValue = (TextView) itemView.findViewById(R.id.num_upvotes);
-            upButton = (ImageButton) itemView.findViewById(R.id.upvote_button);
-            downButton = (ImageButton) itemView.findViewById(R.id.downvote_button);
+            movieName = itemView.findViewById(R.id.movie_name);
+            reviewContents = itemView.findViewById(R.id.review_contents);
+            reviewAuthor = itemView.findViewById(R.id.author_un);
+            reviewTitle = itemView.findViewById(R.id.review_title);
+            date = itemView.findViewById(R.id.date_created);
+            upValue = itemView.findViewById(R.id.num_upvotes);
+            upButton = itemView.findViewById(R.id.upvote_button);
+            downButton = itemView.findViewById(R.id.downvote_button);
         }
 
         /**
@@ -271,15 +268,12 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
         public void updateVotes(String collection, String doc_key, final String field, final String inc_or_dec){
             FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
             final DocumentReference docRef = mFirestore.collection(collection).document(doc_key);
-            Log.d("LOGGER", "docRefID is:" + docRef.getId());
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    Log.d("LOGGER", "task complete");
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document != null) {
-                            Log.d("LOGGER", "Got in here");
                             if(inc_or_dec.equals("INCREASE")) {
                                 // update the value field to value + 1
                                 docRef

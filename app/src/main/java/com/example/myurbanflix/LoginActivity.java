@@ -2,7 +2,6 @@ package com.example.myurbanflix;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +11,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -61,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
      * sets the text of username/password field
      */
     public void initView() {
-        ((TextView)findViewById(R.id.invalid_credentials)).setVisibility(View.INVISIBLE);
+        findViewById(R.id.invalid_credentials).setVisibility(View.INVISIBLE);
         ((TextView)findViewById(R.id.textview_username)).setText("Username / Password");
     }
 
@@ -123,12 +121,12 @@ public class LoginActivity extends AppCompatActivity {
                                         prefEditor.putString("PW", password);
                                         prefEditor.apply();
                                         // hide warning
-                                        ((TextView) findViewById(R.id.invalid_credentials)).setVisibility(View.INVISIBLE);
+                                        findViewById(R.id.invalid_credentials).setVisibility(View.INVISIBLE);
                                         // Take user home
                                         goHome();
                                     } else {
                                         // show warning that the user does not exist in our database
-                                        ((TextView) findViewById(R.id.invalid_credentials)).setVisibility(View.VISIBLE);
+                                        findViewById(R.id.invalid_credentials).setVisibility(View.VISIBLE);
                                     }
                                 }
                             } else {
@@ -161,12 +159,12 @@ public class LoginActivity extends AppCompatActivity {
                                     prefEditor.putString("PW", password);
                                     prefEditor.apply();
                                     // hide warning
-                                    ((TextView) findViewById(R.id.invalid_credentials)).setVisibility(View.INVISIBLE);
+                                    findViewById(R.id.invalid_credentials).setVisibility(View.INVISIBLE);
                                     // Take user home
                                     goHome();
                                 } else {
                                     // show warning that the user does not exist in our database
-                                    ((TextView) findViewById(R.id.invalid_credentials)).setVisibility(View.VISIBLE);
+                                    findViewById(R.id.invalid_credentials).setVisibility(View.VISIBLE);
                                 }
                             } else {
                                 Log.d("query_fail", "Error getting documents: ", task.getException());
