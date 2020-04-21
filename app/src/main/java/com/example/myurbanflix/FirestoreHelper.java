@@ -1,7 +1,16 @@
 package com.example.myurbanflix;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -32,6 +41,67 @@ public class FirestoreHelper {
      */
     public FirebaseFirestore getDBInstance() {
         return this.mFirestore;
+    }
+
+
+    /**
+     * get the value of field 'field' of the document 'doc_key', in collection 'collection',
+     * then use those values to query the database
+     * @param collection collection to query
+     * @param doc_key document of interest
+     * @param field field of interest
+     * @param inc_or_dec is either "INCREASE" OR "DECREASE" based on if we want to upvote or downvote
+     */
+    public void updateVotes(String collection, String doc_key, final String field, final String inc_or_dec){
+        FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
+        final DocumentReference docRef = mFirestore.collection(collection).document(doc_key);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null) {
+                        if(inc_or_dec.equals("INCREASE")) {
+                            // update the value field to value + 1
+                            docRef
+                                    .update(field, document.getLong(field) + 1)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("LOGGER", "DocumentSnapshot successfully updated!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w("LOGGER", "Error updating document", e);
+                                        }
+                                    });
+                        } else {
+                            // update the value field to value - 1
+                            docRef
+                                    .update(field, document.getLong(field) - 1)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("LOGGER", "DocumentSnapshot successfully updated!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w("LOGGER", "Error updating document", e);
+                                        }
+                                    });
+                        }
+                    } else {
+                        Log.d("LOGGER", "No such document");
+                    }
+                } else {
+                    Log.d("LOGGER", "get failed with ", task.getException());
+                }
+            }
+        });
     }
 
     /**

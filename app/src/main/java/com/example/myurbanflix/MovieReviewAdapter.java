@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +11,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 /**
@@ -202,7 +195,7 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                     MovieReview review = snapshot.toObject(MovieReview.class);
                     if(upvoted) {   // if review was previously upvoted
                         // update the database to remove an upvote
-                        updateVotes("reviews", review_id, "upvotes", "DECREASE");
+                        MainActivity.dbHelper.updateVotes("reviews", review_id, "upvotes", "DECREASE");
                         // set shared preference so there is no vote
                         SharedPreferences.Editor prefEditor = myPrefs.edit();
                         prefEditor.remove(review_id);
@@ -210,10 +203,10 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                     }
                     else {  // review was not previously upvoted
                         if(downvoted) { // update the database to remove a downvote
-                            updateVotes("reviews", review_id, "downvotes", "DECREASE");
+                            MainActivity.dbHelper.updateVotes("reviews", review_id, "downvotes", "DECREASE");
                         }
                         // update the database to add an upvote
-                        updateVotes("reviews", review_id, "upvotes", "INCREASE");
+                        MainActivity.dbHelper.updateVotes("reviews", review_id, "upvotes", "INCREASE");
                         // set shared preferences so it is upvoted
                         SharedPreferences.Editor prefEditor = myPrefs.edit();
                         prefEditor.putInt(review_id, MainActivity.UPVOTED);
@@ -236,8 +229,9 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                 MovieReview review = snapshot.toObject(MovieReview.class);
                 public void onClick(View v) {
                     // if item was previously downvoted
-                    if(downvoted) { // update the database to remove a downvote
-                        updateVotes("reviews", review_id, "downvotes", "DECREASE");
+                    if(downvoted) {
+                        // update the database to remove a downvote
+                        MainActivity.dbHelper.updateVotes("reviews", review_id, "downvotes", "DECREASE");
                         // set shared preference so there is no vote
                         SharedPreferences.Editor prefEditor = myPrefs.edit();
                         prefEditor.remove(review_id);
@@ -245,73 +239,14 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                     }
                     else {  // item was not downvoted
                         if(upvoted) {   // update the database to remove an upvote
-                            updateVotes("reviews", review_id, "upvotes", "DECREASE");
+                            MainActivity.dbHelper.updateVotes("reviews", review_id, "upvotes", "DECREASE");
                         }
                         // update the database to add a downvote
-                        updateVotes("reviews", review_id, "downvotes", "INCREASE");
+                        MainActivity.dbHelper.updateVotes("reviews", review_id, "downvotes", "INCREASE");
                         // set shared preferences so it is downvoted
                         SharedPreferences.Editor prefEditor = myPrefs.edit();
                         prefEditor.putInt(review_id, MainActivity.DOWNVOTED);
                         prefEditor.apply();
-                    }
-                }
-            });
-        }
-
-        /**
-         * get the value of field 'field' of the document 'doc_key', in collection 'collection'
-         * @param collection collection to query
-         * @param doc_key document of interest
-         * @param field field of interest
-         * @param inc_or_dec is either "INCREASE" OR "DECREASE" based on if we want to upvote or downvote
-         */
-        public void updateVotes(String collection, String doc_key, final String field, final String inc_or_dec){
-            FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
-            final DocumentReference docRef = mFirestore.collection(collection).document(doc_key);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null) {
-                            if(inc_or_dec.equals("INCREASE")) {
-                                // update the value field to value + 1
-                                docRef
-                                .update(field, document.getLong(field) + 1)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("LOGGER", "DocumentSnapshot successfully updated!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w("LOGGER", "Error updating document", e);
-                                    }
-                                });
-                            } else {
-                                // update the value field to value - 1
-                                docRef
-                                .update(field, document.getLong(field) - 1)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("LOGGER", "DocumentSnapshot successfully updated!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w("LOGGER", "Error updating document", e);
-                                    }
-                                });
-                            }
-                        } else {
-                            Log.d("LOGGER", "No such document");
-                        }
-                    } else {
-                        Log.d("LOGGER", "get failed with ", task.getException());
                     }
                 }
             });
