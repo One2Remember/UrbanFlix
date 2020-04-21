@@ -1,9 +1,7 @@
 package com.example.myurbanflix;
 
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -38,7 +36,8 @@ public class FirestoreHelper {
 
     /**
      * get the value of field 'field' of the document 'doc_key', in collection 'collection',
-     * then use those values to query the database
+     * then use those values to query the database for a review, then either upvotes or downvotes
+     * that review based on inc_or_dec
      * @param collection collection to query
      * @param doc_key document of interest
      * @param field field of interest
