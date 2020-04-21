@@ -44,8 +44,12 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
         enable_buttons = EnableButtons;
     }
 
-
-
+    /**
+     * Creates the view object
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -53,6 +57,11 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
         return new ViewHolder(inflater.inflate(R.layout.movie_review_view, parent, false));
     }
 
+    /**
+     * Binds new document snapshot to a recycled view
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.bind(getSnapshot(position), enable_buttons);
