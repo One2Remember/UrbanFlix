@@ -17,8 +17,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 /**
  * This defines the Login Activity page, which allows the user to input their credentials, and
- * if they match, logs the user in and returns them home. Logging in allows the users to view
- * their profiles (post history) as well as upvote, downvote, and create reviews. The page also
+ * if they match, logs the user in and returns them home; Logging in allows the users to view
+ * their profiles (post history) as well as upvote, downvote, and create reviews; The page also
  * contains a link to the create account page if the user does not have an account yet
  */
 public class LoginActivity extends AppCompatActivity {

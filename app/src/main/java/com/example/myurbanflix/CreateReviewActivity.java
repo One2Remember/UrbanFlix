@@ -25,9 +25,9 @@ import java.util.Date;
 
 /**
  * This class manages the Create Review Activity using Firestore, in which users can create
- * reviews if they are logged in, and push those reviews to the firestore. This class takes
+ * reviews if they are logged in, and push those reviews to the firestore; This class takes
  * care of autopopulating some data like username and date, and suggests a field for the
- * name of the movie depending on the query that brought it here. It also enforces strict
+ * name of the movie depending on the query that brought it here; It also enforces strict
  * character limits for all fields to ensure the formatting looks nice in the app
  */
 public class CreateReviewActivity extends AppCompatActivity {

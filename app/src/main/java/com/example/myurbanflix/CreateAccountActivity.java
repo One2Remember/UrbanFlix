@@ -16,7 +16,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 /**
  * This defines the Account Creation page, which takes input from text fields and compares
- * to database to ensure no duplicate usernames/emails are being used. If new user fields
+ * to database to ensure no duplicate usernames/emails are being used, If new user fields
  * are valid, creates a new user and pushes it to the database
  */
 public class CreateAccountActivity extends AppCompatActivity {

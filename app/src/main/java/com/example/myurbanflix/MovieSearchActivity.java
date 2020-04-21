@@ -15,9 +15,9 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 
 /**
- * This is the activity that is opened when a user searches for a particular movie.
- * String 'message' contains the user query, so this activity uses that query
- * to populate from our database a recycler view containing movie titles that match that query
+ * This is the activity that is opened when a user searches for a particular movie, String 'message'
+ * contains the user query, so this activity uses that query to populate from our database a
+ * recycler view containing movie titles that match that query
  */
 public class MovieSearchActivity extends AppCompatActivity {
     /**

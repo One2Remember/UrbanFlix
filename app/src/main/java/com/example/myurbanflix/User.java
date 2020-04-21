@@ -1,8 +1,8 @@
 package com.example.myurbanflix;
 
 /**
- * This class is used to define a User as the database will understand it. When a user is created
- * in the CreateAccountActivity class, the User is pushed to the database as a User object.
+ * This class is used to define a User as the database will understand it; When a user is created
+ * in the CreateAccountActivity class, the User is pushed to the database as a User object;
  * The firestore will parse the object in order to generate a document which it will store
  * remotely.
  */

@@ -15,9 +15,10 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 
 /**
- * This opens the home page and makes a connection to the firebase db in order to populate
- * a local recycler view which the user can interact with. Upvotes and Downvotes are sent
- * to the database and refreshed locally
+ * This opens the home page and inits a connection to the firebase db in order to populate
+ * a local recycler view which the user can interact with; Upvotes and Downvotes are sent
+ * to the database and refreshed locally; SharedPreferences are also initialized here via the
+ * PreferencesHelper class
  */
 public class MainActivity extends AppCompatActivity {
     /**

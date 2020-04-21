@@ -14,7 +14,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 /**
- * Used to access the firestore database from one central location. Gives clients Queries from
+ * Used to access the firestore database from one central location; Gives clients Queries from
  * database matching particular search parameters they desire, and appropriately logs in
  * users for the client (or keeps them logged out if they have invalid credentials).
  */
@@ -25,7 +25,7 @@ public class FirestoreHelper {
     private FirebaseFirestore mFirestore;
 
     /**
-     * Initialize the db helper's connection to the firestore (where our database is hosted).
+     * Initialize the db helper's connection to the firestore (where our database is hosted);
      * This constructor is only called once, in main activity, to initialize a single public static
      * instance of the FirestoreHelper that other classes can use freely
      */
@@ -95,8 +95,8 @@ public class FirestoreHelper {
     }
 
     /**
-     * Performs the actions dictated by a listener when a query to the database is complete.
-     * The query searches the database for a user with matching username or email and password.
+     * Performs the actions dictated by a listener when a query to the database is complete;
+     * The query searches the database for a user with matching username or email and password;
      * If the query is non-empty (the user exists), the on complete listener will log them in,
      * otherwise, it will display a warning to the user
      * @param loginInIfLegal - the listener that will be called when this query is complete

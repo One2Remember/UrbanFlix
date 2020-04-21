@@ -13,7 +13,7 @@ import com.google.firebase.firestore.Query;
 
 /**
  * This adapter is used for all recycler views in order to inflate movie_review_views and
- * populate them with data from our firestore query. Additional functionality allows
+ * populate them with data from a firestore query (provided by helper); extra functionality allows
  * for recycler to enable/disable upvote downvote buttons for particular views, such as
  * the ViewAccountActivity, which we do not want to be able to mutate reviews
  */
