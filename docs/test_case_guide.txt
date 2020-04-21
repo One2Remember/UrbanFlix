@@ -1,0 +1,20 @@
+MainActivity test:
+
+loginIfAvailable()
+	- assert loginIfAvailable() returns true
+	
+initFirestore()
+	- check mFirestore is null before
+	- call initFirestore()
+	- assert that mFirestore and mQuery are no longer null
+	
+setUpButtons()
+	- check that user is logged in 
+	- if they are, call setUpButtons()
+	- assert that login button has property VISIBLE
+
+getContextOfApplication()
+	- assert that it returns something not null 
+	
+
+

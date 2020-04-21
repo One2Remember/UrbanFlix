@@ -4,24 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 /**
@@ -31,8 +21,10 @@ import com.google.firebase.firestore.Query;
  * the ViewAccountActivity, which we do not want to be able to mutate reviews
  */
 public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.ViewHolder> {
-
-    private boolean enable_buttons; // local field for storing if buttons should be enabled
+    /**
+     * local field for storing if buttons should be enabled
+     */
+    private boolean enable_buttons;
 
     /**
      * Constructor which initializes the moviereviewadapter
@@ -45,7 +37,8 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
     }
 
     /**
-     * Creates the view object
+     * when a view holder is created, this takes its parent inflator and returns a new viewholder
+     * containing the information needed to inflate the view
      * @param parent
      * @param viewType
      * @return
@@ -58,7 +51,8 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
     }
 
     /**
-     * Binds new document snapshot to a recycled view
+     * when view holder is bound, gives holder document snapshot as well as a boolean value telling
+     * it whether it needs to enable the buttons on that view (usually based on user login status)
      * @param holder
      * @param position
      */
@@ -68,28 +62,58 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
     }
 
     /**
-     * grabs handles to local textviews
+     * This subclass is used in order to take empty views, inflate them with data from a document
+     * within a query (in our case), and pass them back to the adapter
      */
     static class ViewHolder extends RecyclerView.ViewHolder {
+        /**
+         * holds a handle to the textview storing the movie name
+         */
         public TextView movieName;
+        /**
+         * holds a handle to the textview storing the review contents
+         */
         public TextView reviewContents;
+        /**
+         * holds a handle to the textview storing the review author
+         */
         public TextView reviewAuthor;
+        /**
+         * holds a handle to the textview storing the review title
+         */
         public TextView reviewTitle;
+        /**
+         * holds a handle to the textview storing the date
+         */
         public TextView date;
+        /**
+         * holds a handle to the textview storing the value of upvotes - downvotes
+         */
         public TextView upValue;
+        /**
+         * holds a handle to the upvote button
+         */
         public ImageButton upButton;
+        /**
+         * holds a handle to the downvote button
+         */
         public ImageButton downButton;
 
+        /**
+         * constructor takes our view to be inflated for the recyclerview, grabs all the necessary
+         * elements on the page for easy reference throughout the rest of the adapter
+         * @param itemView
+         */
         public ViewHolder(View itemView) {
             super(itemView);
-            movieName = (TextView) itemView.findViewById(R.id.movie_name);
-            reviewContents = (TextView) itemView.findViewById(R.id.review_contents);
-            reviewAuthor = (TextView) itemView.findViewById(R.id.author_un);
-            reviewTitle = (TextView) itemView.findViewById(R.id.review_title);
-            date = (TextView) itemView.findViewById(R.id.date_created);
-            upValue = (TextView) itemView.findViewById(R.id.num_upvotes);
-            upButton = (ImageButton) itemView.findViewById(R.id.upvote_button);
-            downButton = (ImageButton) itemView.findViewById(R.id.downvote_button);
+            movieName = itemView.findViewById(R.id.movie_name);
+            reviewContents = itemView.findViewById(R.id.review_contents);
+            reviewAuthor = itemView.findViewById(R.id.author_un);
+            reviewTitle = itemView.findViewById(R.id.review_title);
+            date = itemView.findViewById(R.id.date_created);
+            upValue = itemView.findViewById(R.id.num_upvotes);
+            upButton = itemView.findViewById(R.id.upvote_button);
+            downButton = itemView.findViewById(R.id.downvote_button);
         }
 
         /**
@@ -100,8 +124,6 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
          */
         public void bind(final DocumentSnapshot snapshot, final boolean enable_buttons) {
             MovieReview review = snapshot.toObject(MovieReview.class);
-            Resources resources = itemView.getResources();
-
             movieName.setText(review.getMovieName());
             reviewContents.setText(review.getContents());
             reviewAuthor.setText(review.getUserName());
@@ -127,9 +149,7 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
             Context applicationContext = MainActivity.getContextOfApplication();
             final SharedPreferences myPrefs = applicationContext.getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
             boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
-
             final String review_id = snapshot.getId();
-
             // check user prefs to see if this activity has been upvoted/downvoted already
             int upvoteValue = myPrefs.getInt(review_id, MainActivity.NOTVOTED);
             final boolean upvoted = upvoteValue == MainActivity.UPVOTED;
@@ -159,7 +179,12 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
 
             /**
              * sets heavily loaded onclick listener to upvote button to behave like a reddit
-             * upvote button
+             * upvote button:
+             *    if upvoted prior, removes upvote
+             *    elif downvoted prior, removes downvote and changes to upvote
+             *    else adds an upvote
+             * in all cases this updates shared preferences (to disallow repeat votes) and updates
+             * the database appropriately for all three cases
              */
             upButton.setOnClickListener( new View.OnClickListener() {
                 public void onClick(View v) {
@@ -167,7 +192,7 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                     MovieReview review = snapshot.toObject(MovieReview.class);
                     if(upvoted) {   // if review was previously upvoted
                         // update the database to remove an upvote
-                        updateVotes("reviews", review_id, "upvotes", "DECREASE");
+                        MainActivity.dbHelper.updateVotes("reviews", review_id, "upvotes", "DECREASE");
                         // set shared preference so there is no vote
                         SharedPreferences.Editor prefEditor = myPrefs.edit();
                         prefEditor.remove(review_id);
@@ -175,10 +200,10 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                     }
                     else {  // review was not previously upvoted
                         if(downvoted) { // update the database to remove a downvote
-                            updateVotes("reviews", review_id, "downvotes", "DECREASE");
+                            MainActivity.dbHelper.updateVotes("reviews", review_id, "downvotes", "DECREASE");
                         }
                         // update the database to add an upvote
-                        updateVotes("reviews", review_id, "upvotes", "INCREASE");
+                        MainActivity.dbHelper.updateVotes("reviews", review_id, "upvotes", "INCREASE");
                         // set shared preferences so it is upvoted
                         SharedPreferences.Editor prefEditor = myPrefs.edit();
                         prefEditor.putInt(review_id, MainActivity.UPVOTED);
@@ -189,15 +214,21 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
 
             /**
              * sets heavily loaded onclick listener to downvote button to behave like a reddit
-             * downvote button
+             * downvote button:
+             *    if downvoted prior, removes downvote
+             *    elif upvoted prior, removes upvote and changes to downvote
+             *    else adds a downvote
+             * in all cases this updates shared preferences (to disallow repeat votes) and updates
+             * the database appropriately for all three cases
              */
             downButton.setOnClickListener( new View.OnClickListener() {
                 // grab a reference to our review for easy field checking
                 MovieReview review = snapshot.toObject(MovieReview.class);
                 public void onClick(View v) {
                     // if item was previously downvoted
-                    if(downvoted) { // update the database to remove a downvote
-                        updateVotes("reviews", review_id, "downvotes", "DECREASE");
+                    if(downvoted) {
+                        // update the database to remove a downvote
+                        MainActivity.dbHelper.updateVotes("reviews", review_id, "downvotes", "DECREASE");
                         // set shared preference so there is no vote
                         SharedPreferences.Editor prefEditor = myPrefs.edit();
                         prefEditor.remove(review_id);
@@ -205,76 +236,14 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
                     }
                     else {  // item was not downvoted
                         if(upvoted) {   // update the database to remove an upvote
-                            updateVotes("reviews", review_id, "upvotes", "DECREASE");
+                            MainActivity.dbHelper.updateVotes("reviews", review_id, "upvotes", "DECREASE");
                         }
                         // update the database to add a downvote
-                        updateVotes("reviews", review_id, "downvotes", "INCREASE");
+                        MainActivity.dbHelper.updateVotes("reviews", review_id, "downvotes", "INCREASE");
                         // set shared preferences so it is downvoted
                         SharedPreferences.Editor prefEditor = myPrefs.edit();
                         prefEditor.putInt(review_id, MainActivity.DOWNVOTED);
                         prefEditor.apply();
-                    }
-                }
-            });
-        }
-
-        /**
-         * get the value of field 'field' of the document 'doc_key', in collection 'collection'
-         * @param collection collection to query
-         * @param doc_key document of interest
-         * @param field field of interest
-         * @param inc_or_dec is either "INCREASE" OR "DECREASE" based on if we want to upvote or downvote
-         */
-        public void updateVotes(String collection, String doc_key, final String field, final String inc_or_dec){
-            FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
-            final DocumentReference docRef = mFirestore.collection(collection).document(doc_key);
-            Log.d("LOGGER", "docRefID is:" + docRef.getId());
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    Log.d("LOGGER", "task complete");
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null) {
-                            Log.d("LOGGER", "Got in here");
-                            if(inc_or_dec.equals("INCREASE")) {
-                                // update the value field to value + 1
-                                docRef
-                                .update(field, document.getLong(field) + 1)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("LOGGER", "DocumentSnapshot successfully updated!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w("LOGGER", "Error updating document", e);
-                                    }
-                                });
-                            } else {
-                                // update the value field to value - 1
-                                docRef
-                                .update(field, document.getLong(field) - 1)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("LOGGER", "DocumentSnapshot successfully updated!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w("LOGGER", "Error updating document", e);
-                                    }
-                                });
-                            }
-                        } else {
-                            Log.d("LOGGER", "No such document");
-                        }
-                    } else {
-                        Log.d("LOGGER", "get failed with ", task.getException());
                     }
                 }
             });
