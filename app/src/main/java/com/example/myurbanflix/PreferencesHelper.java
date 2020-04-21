@@ -34,6 +34,16 @@ public class PreferencesHelper {
     }
 
     /**
+     * Instantiates a SharedPreferences helper based on /any/ context and name (for unit testing)
+     * @param context - context of activity to populate preferences from
+     * @param preferences - name of shared preferences file to draw from
+     */
+    public PreferencesHelper(Context context, String preferences) {
+        mainContext = context;
+        myPrefs = mainContext.getSharedPreferences(preferences, Context.MODE_PRIVATE);
+    }
+
+    /**
      * Allows client to access shared preference string field by key, returning a default value if
      * preference is not found
      * @param id - preference key to search
