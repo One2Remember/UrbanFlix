@@ -100,7 +100,7 @@ public class PreferencesHelper {
     }
 
     /**
-     * Removes a preferenced from shared preferences
+     * Removes a preferences from shared preferences by key
      * @param id - key of preference to remove
      */
     public void removePreference(String id) {
