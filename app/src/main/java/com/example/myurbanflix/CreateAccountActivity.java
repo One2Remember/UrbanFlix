@@ -24,10 +24,6 @@ import com.google.firebase.firestore.QuerySnapshot;
  */
 public class CreateAccountActivity extends AppCompatActivity {
     /**
-     * A handle to the firestore connection so it need only be instantiated once
-     */
-    private FirebaseFirestore mFirestore;
-    /**
      * For instantiating shared preferences
      */
     private SharedPreferences myPrefs;
@@ -66,7 +62,6 @@ public class CreateAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
         initPreferences();  // Initializes User Preferences
-        initFirestore();    // Initializes Google Firestore Connection
         initViews();        // initialize views
     }
 
@@ -91,13 +86,11 @@ public class CreateAccountActivity extends AppCompatActivity {
         accCreateButton.setOnClickListener(new View.OnClickListener() { // add listener
             @Override
             public void onClick(View v) {
-                // Gets a reference to the collection of users in the database
-                final CollectionReference users = mFirestore.collection("users");
                 // Get the user information from text fields
                 final String email = emailField.getText().toString();
                 final String un = usernameField.getText().toString();
                 final String pw = passwordField.getText().toString();
-                tryCreateAccountUN(users, email, un, pw);
+                tryCreateAccountUN(email, un, pw);
             }
         });
     }
@@ -129,78 +122,72 @@ public class CreateAccountActivity extends AppCompatActivity {
         startActivity(new Intent(this, MainActivity.class));
     }
 
-    /**
-     * to initialize the firestore connection
-     */
-    private void initFirestore() {
-        mFirestore = FirebaseFirestore.getInstance();
-    }
 
     /**
      * called when user clicks create account, if the UN is in use, show warning, else make sure
-     * email is not in use either
+     * email is not in use either before trying to create account
      */
-    private void tryCreateAccountUN(final CollectionReference users, final String email,
-                                    final String username, final String password) {
-        // Query user collection to see if username already exists in database
-        users
-            .whereEqualTo("username", username)
-            .get()
-            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
-                        boolean isEmpty = true;
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            isEmpty = false;
-                        }
-                        if(isEmpty) {   // if that username is not in use already
-                            accWarning.setVisibility(View.INVISIBLE);   // make warning invisible
-                            tryCreateAccountEmail(users, email, username, password);
-                        } else {    // that username is already in use
-                            accWarning.setVisibility(View.VISIBLE); // make warning visible
-                            accWarning.setText("That username is already in use!");
-                        }
-                    } else {
-                        Log.d("query_fail", "Error getting documents: ", task.getException());
+    private void tryCreateAccountUN(final String email, final String username, final String password) {
+        // a listener for the db helper to use so it knows what to do after it queries
+        // the database to see if a user already exists with the given credentials
+        OnCompleteListener<QuerySnapshot> createAccount = new  OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    boolean isEmpty = true;
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        isEmpty = false;
                     }
+                    if(isEmpty) {   // if that username is not in use already
+                        accWarning.setVisibility(View.INVISIBLE);   // make warning invisible
+                        // Query user collection to see if user email already exists
+                        tryCreateAccountEmail(email, username, password);
+                    } else {    // that username is already in use
+                        accWarning.setVisibility(View.VISIBLE); // make warning visible
+                        accWarning.setText("That username is already in use!");
+                    }
+                } else {
+                    Log.d("query_fail", "Error getting documents: ", task.getException());
                 }
-            });
+            }
+        };
+        // ask dbHelper to execute the contents of our listener when it is done querying the
+        // db to check the user's username
+        MainActivity.dbHelper.validateUsername(createAccount, username);
     }
 
     /**
      * called when user clicks create account, if the email is in use, show warning, else
      * create the new account
      */
-    private void tryCreateAccountEmail(final CollectionReference users, final String email,
-                                       final String username, final String password) {
-        // Query user collection to see if user email already exists
-        users
-            .whereEqualTo("email", email)
-            .get()
-            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
-                        boolean isEmpty = true;
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            isEmpty = false;
-                        }
-                        if(isEmpty) {   // if that email is not in use already
-                            accWarning.setVisibility(View.INVISIBLE);   // make warning invisible
-                            User newUser = new User(email, username, password); // Create user
-                            users.add(newUser); // Push user to database
-                            saveLoginInfo(username, password);  // save login info
-                            setLogInThenView(); // log in and go to account
-                        } else {
-                            accWarning.setVisibility(View.VISIBLE); // make warning visible
-                            accWarning.setText("That email is already in use!");
-                        }
-                    } else {
-                        Log.d("query_fail", "Error getting documents: ", task.getException());
+    private void tryCreateAccountEmail(final String email, final String username, final String password) {
+        // a listener for the db helper to use so it knows what to do after it queries
+        // the database to see if a user already exists with the given email
+        OnCompleteListener<QuerySnapshot> createAccount = new  OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    boolean isEmpty = true;
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        isEmpty = false;
                     }
+                    if(isEmpty) {   // if that email is not in use already
+                        accWarning.setVisibility(View.INVISIBLE);   // make warning invisible
+                        User newUser = new User(email, username, password); // Create user
+                        MainActivity.dbHelper.pushUserToDB(newUser);    // push new user to db
+                        saveLoginInfo(username, password);  // save login info
+                        setLogInThenView(); // log in and go to account
+                    } else {
+                        accWarning.setVisibility(View.VISIBLE); // make warning visible
+                        accWarning.setText("That email is already in use!");
+                    }
+                } else {
+                    Log.d("query_fail", "Error getting documents: ", task.getException());
                 }
-            });
+            }
+        };
+        // ask dbHelper to execute the contents of our listener when it is done querying the
+        // db to check the user's email
+        MainActivity.dbHelper.validateEmail(createAccount, email);
     }
-
 }

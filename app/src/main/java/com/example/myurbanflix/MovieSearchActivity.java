@@ -39,10 +39,6 @@ public class MovieSearchActivity extends AppCompatActivity {
      */
     private String message;
     /**
-     * A handle to the firestore connection so it need only be instantiated once
-     */
-    private FirebaseFirestore mFirestore;
-    /**
      * for storing the query used to populate the recycler view
      */
     private Query mQuery;
@@ -59,7 +55,6 @@ public class MovieSearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movie_search);
         // Get the Intent that started this activity and extract the query message
         message = getIntent().getStringExtra(MainActivity.SEARCH_MESSAGE);
-        initFirestore();    // init connection to firestore
         initViews();    // initialize all views (including recycler) in the activity
     }
 
@@ -73,6 +68,7 @@ public class MovieSearchActivity extends AppCompatActivity {
         title.setText("Results for: " + message);   // set the title of the page based on user query
         searchBarToMovieSearch();   // adds a listener to search bar at the top
         initRecycler(); // initializes the recycler view
+        showHideMakeReviewButton(); // hide the create a review button if the user is not logged in
     }
 
     /**
@@ -98,23 +94,14 @@ public class MovieSearchActivity extends AppCompatActivity {
     }
 
     /**
-     * initializes a connection to the firestore and generates a query to the store based on the
-     * user's search (case insensitive) and displays them newest->oldest
-     */
-    public void initFirestore() {
-        mFirestore = FirebaseFirestore.getInstance();
-        // Get reviews from firestore
-        // .orderBy("criteria", Query.Direction.{ASCENDING | DESCENDING})
-        // .limit(int) will limit the number of reviews pulled from firestore
-        mQuery = mFirestore.collection("reviews").whereEqualTo("movieNameLower", message.toLowerCase())
-                .orderBy("dateCreated", Query.Direction.DESCENDING).limit(50);
-    }
-
-    /**
      * initializes the recycler view used to display the movie reviews that match the user's
      * query (which is grabbed in the initFirestore() method above)
      */
     public void initRecycler() {
+        // get query for use in recycler - up to 50 reviews, matching name (ignoring case),
+        // sorted newest->oldest
+        mQuery = MainActivity.dbHelper.getMatchingRecyclerQuery("reviews", "movieNameLower",
+                message.toLowerCase(), "dateCreated", Query.Direction.DESCENDING, 50);
         // Set up the RecyclerView
         recyclerView = findViewById(R.id.movie_list_recycler_search);
         recyclerView.setHasFixedSize(true);
@@ -129,12 +116,11 @@ public class MovieSearchActivity extends AppCompatActivity {
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(mAdapter);  // specify an adapter
-        showHideMakeReviewButton(); // hide the create a review button if the user is not logged in
+        recyclerView.setAdapter(mAdapter);  // specify we want to user our adapter
     }
 
     /**
-     * show or hides the FAB that allows user to create a review based on their logged_in status
+     * Shows or hides the FAB that allows user to create a review based on their logged_in status
      */
     public void showHideMakeReviewButton() {
         // get whether user is logged in; if preference does not already exist, assume false

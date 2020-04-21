@@ -32,10 +32,6 @@ public class ViewAccountActivity extends AppCompatActivity {
      */
     private RecyclerView.LayoutManager layoutManager;
     /**
-     * A handle to the firestore connection so it need only be instantiated once
-     */
-    private FirebaseFirestore mFirestore;
-    /**
      * For instantiating shared preferences
      */
     private SharedPreferences myPrefs;
@@ -57,7 +53,7 @@ public class ViewAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_account);
         myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);    // init preference
-        initFirestore();   // initialize handle to FireStore
+        initQuery();   // initialize handle to FireStore
         initRecycler(); // initialize the recycler view, populate from database
     }
 
@@ -84,21 +80,18 @@ public class ViewAccountActivity extends AppCompatActivity {
 
     /**
      * initializes a connection to the firestore and produces the query of the db giving back
-     * an ascending list of the user's reviews based on the date the reviews were created
+     * an ascending list of the specific user's reviews based on the date the reviews were created
      * (oldest reviews appear at the top)
      */
-    public void initFirestore() {
-        mFirestore = FirebaseFirestore.getInstance();
-        // Get reviews from firestore
-        // .orderBy("criteria", Query.Direction.{ASCENDING | DESCENDING})
-        // .limit(int) will limit the number of reviews pulled from firestore
+    public void initQuery() {
         String username = myPrefs.getString("UN", "Admin");
-        mQuery = mFirestore.collection("reviews").whereEqualTo("userName", username)
-                .orderBy("dateCreated", Query.Direction.ASCENDING).limit(50);
+        mQuery = MainActivity.dbHelper.getMatchingRecyclerQuery("reviews", "userName", username,
+                "dateCreated", Query.Direction.ASCENDING, 50);
     }
 
     /**
-     * initializes the recyclerview
+     * initializes the recyclerview from a query provided by the dbHelper, with queries sorted
+     * by matching username, with oldest reviews showed first
      */
     public void initRecycler() {
         // Set up the RecyclerView

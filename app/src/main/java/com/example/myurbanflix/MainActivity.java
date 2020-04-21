@@ -13,7 +13,6 @@ import android.content.SharedPreferences;
 import android.widget.Button;
 import android.widget.SearchView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 
@@ -67,13 +66,14 @@ public class MainActivity extends AppCompatActivity {
      */
     private SharedPreferences.Editor prefEditor;
     /**
-     * A handle to the firestore connection so it need only be instantiated once
-     */
-    private FirebaseFirestore mFirestore;
-    /**
      * For holding the query used to populate the recycler view from the db
      */
     private Query mQuery;
+    /**
+     * A helper for accessing our database for the purpose of generating queries for this class
+     * as well as other classes (public static for this reason)
+     */
+    public static FirestoreHelper dbHelper;
 
     /**
      * grabs user preferences, logs in the user if they have stored login credentials, grabs a
@@ -86,24 +86,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dbHelper = new FirestoreHelper();   // initialize a helper to access the firestore
         contextOfApplication = getApplicationContext(); // set context for sharing w/non-activities
         myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);   // grab user prefs
         loginIfAvailable(); // login user if they have stored credentials
-        initFirestore();    // Initialize Firestore
         initView();         // Initialize recycler view, search bar, account button
     }
 
     /**
-     * Logs user in if they have locally stored credentials
+     * Logs user in if they have locally stored credentials, return whether login was successful
+     * or not
      */
-    void loginIfAvailable() {
-        prefEditor = myPrefs.edit();
+    boolean loginIfAvailable() {
         String un = myPrefs.getString("UN", "null");
         String pw = myPrefs.getString( "PW", "null");
         if(!un.equals("null") && !pw.equals("null")) {
+            prefEditor = myPrefs.edit();
             prefEditor.putBoolean("LoggedIn", true);
+            prefEditor.apply();
+            return true;
         }
-        prefEditor.apply();
+        return false;
     }
     /**
      * for the recycler view to know to listen to db and user input on activity start
@@ -130,30 +133,16 @@ public class MainActivity extends AppCompatActivity {
      * initialize various view components within the activity
      */
     public void initView() {
-        recyclerView = findViewById(R.id.movie_list_recycler_main); // declare handle to recyclerView
         searchBarToMovieSearch();   // adds a listener to search bar
-        setUpRecycler();    // set up recycler view
-        setUpButtons();     // set login and fab button based on user logged in status
+        initRecycler();    // set up recycler view
+        initButtons();     // set login and fab button based on user logged in status
     }
 
-    /**
-     * initialize our connection to the firestore and set the query which will populate our
-     * recyclerview
-     */
-    private void initFirestore() {
-        mFirestore = FirebaseFirestore.getInstance();
-        // Get reviews from firestore
-        // .orderBy("criteria", Query.Direction.{ASCENDING | DESCENDING})
-        // .limit(int) will limit the number of reviews pulled from firestore
-        mQuery = mFirestore.collection("reviews")
-                .orderBy("dateCreated", Query.Direction.DESCENDING)
-                .limit(50);
-    }
     /**
      * sets account button to say either account or login based on login status, also enables
      * or disables the FAB for adding a review to keep non-logged users from writing reviews
      */
-    public void setUpButtons() {
+    public void initButtons() {
         boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
         if(loggedIn) {
             ((Button)findViewById(R.id.login)).setText("Account");
@@ -166,14 +155,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * set up the recycler view
+     * Set up the recycler view based on the query result provided by the database. Uses our
+     * personally designed adapter as well as the preconstructed linear layout manager
      */
-    public void setUpRecycler() {
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
+    public void initRecycler() {
+        // initialize handle to recyclerView
+        recyclerView = findViewById(R.id.movie_list_recycler_main);
+        // initialize our connection to the firestore and have dbHelper set the query which will
+        // populate our recyclerview
+        mQuery = dbHelper.getGeneralRecyclerQuery("reviews", "dateCreated", Query.Direction.DESCENDING, 50);
+        // improves performance since our design allows us to fix the recycler size
         recyclerView.setHasFixedSize(true);
-
-        // Pull and display from database
+        // Pull and display data from database
         mAdapter = new MovieReviewAdapter(mQuery, true) {
             @Override
             protected void onError(FirebaseFirestoreException e) {
@@ -182,12 +175,10 @@ public class MainActivity extends AppCompatActivity {
                         "Error: check logs for info.", Snackbar.LENGTH_LONG).show();
             }
         };
-
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);
-
         recyclerView.addItemDecoration(new DividerItemDecoration(contextOfApplication,
                 DividerItemDecoration.VERTICAL));
     }
