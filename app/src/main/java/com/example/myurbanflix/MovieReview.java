@@ -76,29 +76,6 @@ public class  MovieReview {
     }
 
     /**
-     * adds an upvote to the review
-     */
-    public void upVote() {
-        upvotes++;
-    }
-    /**
-     * removes an upvote for the review
-     */
-    public void removeUpVote() {upvotes--;}
-
-    /**
-     * adds a downvote to the reivew
-     */
-    public void downVote() {
-        downvotes++;
-    }
-
-    /**
-     * removes a downvote from the review
-     */
-    public void removeDownVote() {downvotes--; }
-
-    /**
      * @return review title
      */
     @PropertyName("reviewTitle")
