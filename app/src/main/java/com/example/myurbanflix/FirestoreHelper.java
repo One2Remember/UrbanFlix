@@ -1,16 +1,9 @@
 package com.example.myurbanflix;
 
-import android.util.Log;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 /**
@@ -67,6 +60,14 @@ public class FirestoreHelper {
         }
     }
 
+    /**
+     * Called in create review activity, takes a listener which will update user preferences once
+     * this db query is completed, finding the review that was just pushed to the db, and giving
+     * back the review's key so that it can be stored in sharedpreferences
+     * @param updatePrefs - listener that will update preferences
+     * @param username - user's un
+     * @param dateCreated - the exact date and time it was created
+     */
     public void updateUserPrefs(OnCompleteListener<QuerySnapshot> updatePrefs, String username,
                                 String dateCreated) {
         mFirestore.collection("reviews")
@@ -92,6 +93,12 @@ public class FirestoreHelper {
         mFirestore.collection("users").add(user);
     }
 
+    /**
+     * Checks if a given username is already in use and calls the createAccIfLegal listener
+     * defined in CreateAccountActivity
+     * @param createAccIfLegal - listener to call upon query completion
+     * @param username - username to validate
+     */
     public void validateUsername(OnCompleteListener<QuerySnapshot> createAccIfLegal, String username) {
         // Query user collection to see if username already exists
         mFirestore.collection("users")
@@ -100,6 +107,12 @@ public class FirestoreHelper {
                 .addOnCompleteListener(createAccIfLegal);
     }
 
+    /**
+     * Checks if a given email is already in use and calls the createAccIfLegal listener
+     * defined in CreateAccountActivity
+     * @param createAccIfLegal - listener to call upon query completion
+     * @param email - email to validate
+     */
     public void validateEmail(OnCompleteListener<QuerySnapshot> createAccIfLegal, String email) {
         // Query user collection to see if user email already exists
         mFirestore.collection("users")
