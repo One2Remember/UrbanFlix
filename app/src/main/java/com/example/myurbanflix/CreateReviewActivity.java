@@ -245,7 +245,7 @@ public class CreateReviewActivity extends AppCompatActivity {
      * preferences so app knows user has upvoted their own review, and goes home
      */
     public void createNewReview(View view) {
-        String movieTitle, reviewTitle, reviewBody, date, myUN;
+        final String movieTitle, reviewTitle, reviewBody, date, myUN;
         // pull data from text fields
         movieTitle = movieTitleField.getText().toString();
         reviewTitle = reviewTitleField.getText().toString();
@@ -272,8 +272,7 @@ public class CreateReviewActivity extends AppCompatActivity {
                         foundQuery = true;
                     }
                     if(foundQuery) {
-                        Log.d("LOGGER", "adding review " + docID + " to sharedprefs");
-                        updateUserPreference(docID);
+                        updateUserPreference(docID  + myUN);
                     } else {
                         Log.d("LOGGER", "new review not found");
                     }

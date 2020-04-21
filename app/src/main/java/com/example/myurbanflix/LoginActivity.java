@@ -13,8 +13,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -35,8 +33,8 @@ public class LoginActivity extends AppCompatActivity {
     private SharedPreferences.Editor prefEditor;
 
     /**
-     * When activity is created, initializes all views on the page, makes connection to firestore,
-     * and pulls down handles to shared preferences
+     * When activity is created, initializes all views on the page, and pulls down handles to
+     * shared preferences
      * @param savedInstanceState
      */
     @Override
@@ -80,12 +78,10 @@ public class LoginActivity extends AppCompatActivity {
      */
     public void login(View view) {
         hideKeyboard(view); // hide the keyboard
-
         // pull data from text fields (username or email AND password)
         final String un_or_email, password;
         un_or_email = ((EditText)findViewById(R.id.acc_create_username)).getText().toString();
         password = ((EditText)findViewById(R.id.acc_create_password)).getText().toString();
-
         // create on complete listener for database to use when checking user credentials,
         // appropriately logging in user if credentials are valid or showing warning and keeping
         // user logged out if credentials are not valid

@@ -2,7 +2,6 @@ package com.example.myurbanflix;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -145,34 +144,28 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
          * @param snapshot the same document snapshot is passed through
          */
         public void setButtonFunctionality(final DocumentSnapshot snapshot) {
-            // Check if user is logged in
-            Context applicationContext = MainActivity.getContextOfApplication();
-            final SharedPreferences myPrefs = applicationContext.getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
-            boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
             final String review_id = snapshot.getId();
+            // Check if user is logged in
+            boolean loggedIn = MainActivity.prefHelper.getBoolPreference("LoggedIn", false);
             // check user prefs to see if this activity has been upvoted/downvoted already
-            int upvoteValue = myPrefs.getInt(review_id, MainActivity.NOTVOTED);
-            final boolean upvoted = upvoteValue == MainActivity.UPVOTED;
-            final boolean downvoted = upvoteValue == MainActivity.DOWNVOTED;
+            final String username = MainActivity.prefHelper.getStringPreference("UN", "Admin");
+            // ask preferences if review has been voted by this user
+            final int voteValue = MainActivity.prefHelper.getIntPreference(review_id + username, MainActivity.NOTVOTED);
             // set both buttons to white by default
             upButton.setColorFilter(Color.argb(255,255,255,255));
             downButton.setColorFilter(Color.argb(255,255,255,255));
-            // set appropriate buttons to blue as needed
+            // set appropriate button color and disable buttons if user is not logged in
             if(loggedIn) {
-                if(upvoteValue == MainActivity.UPVOTED) {    // set upvote button to green
+                if(voteValue == MainActivity.UPVOTED) {    // set upvote button to green
                     upButton.setColorFilter(Color.argb(255,155,250,50));
                 }
-                else if (upvoteValue == MainActivity.DOWNVOTED) {   // set downvote button orange
+                else if (voteValue == MainActivity.DOWNVOTED) {   // set downvote button orange
                     downButton.setColorFilter(Color.argb(180,255,150,0));
                 }
-            }
-
-            // enable/disable upButton based on if user is logged in
-            if(loggedIn) {
+                // enable voting based on if user is logged in
                 upButton.setEnabled(true);
                 downButton.setEnabled(true);
-            }
-            else {
+            } else {    // disable voting if user is not logged in
                 upButton.setEnabled(false);
                 downButton.setEnabled(false);
             }
@@ -188,26 +181,20 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
              */
             upButton.setOnClickListener( new View.OnClickListener() {
                 public void onClick(View v) {
-                    // grab a reference to our review for easy field checking
-                    MovieReview review = snapshot.toObject(MovieReview.class);
-                    if(upvoted) {   // if review was previously upvoted
+                    if(voteValue == MainActivity.UPVOTED) {   // if review was previously upvoted
                         // update the database to remove an upvote
-                        MainActivity.dbHelper.updateVotes("reviews", review_id, "upvotes", "DECREASE");
+                        MainActivity.dbHelper.updateVotes("reviews", review_id , "upvotes", "DECREASE");
                         // set shared preference so there is no vote
-                        SharedPreferences.Editor prefEditor = myPrefs.edit();
-                        prefEditor.remove(review_id);
-                        prefEditor.apply();
+                        MainActivity.prefHelper.setPreference(review_id + username, MainActivity.NOTVOTED);
                     }
                     else {  // review was not previously upvoted
-                        if(downvoted) { // update the database to remove a downvote
+                        if(voteValue == MainActivity.DOWNVOTED) { // update the database to remove a downvote
                             MainActivity.dbHelper.updateVotes("reviews", review_id, "downvotes", "DECREASE");
                         }
                         // update the database to add an upvote
                         MainActivity.dbHelper.updateVotes("reviews", review_id, "upvotes", "INCREASE");
                         // set shared preferences so it is upvoted
-                        SharedPreferences.Editor prefEditor = myPrefs.edit();
-                        prefEditor.putInt(review_id, MainActivity.UPVOTED);
-                        prefEditor.apply();
+                        MainActivity.prefHelper.setPreference(review_id + username, MainActivity.UPVOTED);
                     }
                 }
             });
@@ -222,28 +209,22 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
              * the database appropriately for all three cases
              */
             downButton.setOnClickListener( new View.OnClickListener() {
-                // grab a reference to our review for easy field checking
-                MovieReview review = snapshot.toObject(MovieReview.class);
                 public void onClick(View v) {
                     // if item was previously downvoted
-                    if(downvoted) {
+                    if(voteValue == MainActivity.DOWNVOTED) {
                         // update the database to remove a downvote
                         MainActivity.dbHelper.updateVotes("reviews", review_id, "downvotes", "DECREASE");
                         // set shared preference so there is no vote
-                        SharedPreferences.Editor prefEditor = myPrefs.edit();
-                        prefEditor.remove(review_id);
-                        prefEditor.apply();
+                        MainActivity.prefHelper.setPreference(review_id  + username, MainActivity.NOTVOTED);
                     }
                     else {  // item was not downvoted
-                        if(upvoted) {   // update the database to remove an upvote
+                        if(voteValue == MainActivity.UPVOTED) {   // update the database to remove an upvote
                             MainActivity.dbHelper.updateVotes("reviews", review_id, "upvotes", "DECREASE");
                         }
                         // update the database to add a downvote
                         MainActivity.dbHelper.updateVotes("reviews", review_id, "downvotes", "INCREASE");
                         // set shared preferences so it is downvoted
-                        SharedPreferences.Editor prefEditor = myPrefs.edit();
-                        prefEditor.putInt(review_id, MainActivity.DOWNVOTED);
-                        prefEditor.apply();
+                        MainActivity.prefHelper.setPreference(review_id + username, MainActivity.DOWNVOTED);
                     }
                 }
             });

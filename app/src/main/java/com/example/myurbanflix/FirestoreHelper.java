@@ -44,7 +44,6 @@ public class FirestoreHelper {
      * @param inc_or_dec is either "INCREASE" OR "DECREASE" based on if we want to upvote or downvote
      */
     public void updateVotes(String collection, String doc_key, final String field, final String inc_or_dec){
-        FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
         final DocumentReference docRef = mFirestore.collection(collection).document(doc_key);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override

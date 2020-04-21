@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.SearchView;
 import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 
@@ -169,7 +168,7 @@ public class MovieSearchActivity extends AppCompatActivity {
     }
 
     /**
-     * Called when user clicks "Home" button
+     * Called when user clicks "Home" button, takes user to home activity
      * @param view
      */
     public void goHome(View view) {
@@ -177,7 +176,8 @@ public class MovieSearchActivity extends AppCompatActivity {
     }
 
     /**
-     * Called when user clicks FAB (goes to the create review activity)
+     * Called when user clicks FAB (goes to create review activity), also grabs search query that
+     * got user to this page and sends it with intent to create review activity
      * @param view
      */
     public void goToCreateReview(View view) {
