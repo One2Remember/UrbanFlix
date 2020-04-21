@@ -67,6 +67,27 @@ public class FirestoreHelper {
         }
     }
 
+    public void updateUserPrefs(OnCompleteListener<QuerySnapshot> updatePrefs, String username,
+                                String dateCreated) {
+        mFirestore.collection("reviews")
+                .whereEqualTo("userName", username)
+                .whereEqualTo("dateCreated", dateCreated)
+                .get()
+                .addOnCompleteListener(updatePrefs);
+    }
+
+    /**
+     * pushes a MovieReview object to the database
+     * @param review - to push
+     */
+    public void pushReviewToDB(MovieReview review) {
+        mFirestore.collection("reviews").add(review);
+    }
+
+    /**
+     * pushes a User object to the database
+     * @param user - to push
+     */
     public void pushUserToDB(User user) {
         mFirestore.collection("users").add(user);
     }

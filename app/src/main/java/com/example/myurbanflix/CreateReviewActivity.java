@@ -39,10 +39,6 @@ public class CreateReviewActivity extends AppCompatActivity {
      */
     private String message;
     /**
-     * A handle to the firestore connection so it need only be instantiated once
-     */
-    private FirebaseFirestore mFirestore;
-    /**
      * a handle to the textview which warns the viewer if they are approaching the character limit
      * for the movie title
      */
@@ -93,8 +89,6 @@ public class CreateReviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_review);
         // get user preferences
         myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-        // make connection to database
-        mFirestore = FirebaseFirestore.getInstance();
         // initialize all views on screen
         initViews();
     }
@@ -247,11 +241,11 @@ public class CreateReviewActivity extends AppCompatActivity {
     }
 
     /**
-     * Called when the user taps the Submit button, adds review to database and goes home
+     * Called when the user taps the Submit button, adds review to database, updates shared
+     * preferences so app knows user has upvoted their own review, and goes home
      */
     public void createNewReview(View view) {
         String movieTitle, reviewTitle, reviewBody, date, myUN;
-        // make connection to database
         // pull data from text fields
         movieTitle = movieTitleField.getText().toString();
         reviewTitle = reviewTitleField.getText().toString();
@@ -262,30 +256,34 @@ public class CreateReviewActivity extends AppCompatActivity {
         date = getDate();
         // use data to create object to insert into database (upvotes should be 1, downvotes 0)
         MovieReview newReview = new MovieReview(reviewTitle, movieTitle, myUN, date, reviewBody);
-
-        // Gets a reference to the collection of users in the database
-        final CollectionReference reviewDB = mFirestore.collection("reviews");
-        reviewDB.add(newReview);    // push object to database
-
-        // pull down review that was just made and grab its key
-        // Query user collection to see if user exists
-        reviewDB
-                .whereEqualTo("userName", myUN)
-                .whereEqualTo("dateCreated", date)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d("query_success", document.getId() + " => " + document.getData());
-                                updateUserPreference(document.getId());
-                            }
-                        } else {
-                            Log.d("query_fail", "Error getting documents: ", task.getException());
+        // push new review to database
+        MainActivity.dbHelper.pushReviewToDB(newReview);
+        // create listener so db knows what to do when it finds review we want it to search for
+        OnCompleteListener<QuerySnapshot> updatePrefs = new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    boolean foundQuery = false;
+                    String docID = "";
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if(!foundQuery) {
+                            docID = document.getId();
                         }
+                        foundQuery = true;
                     }
-                });
+                    if(foundQuery) {
+                        Log.d("LOGGER", "adding review " + docID + " to sharedprefs");
+                        updateUserPreference(docID);
+                    } else {
+                        Log.d("LOGGER", "new review not found");
+                    }
+                } else {
+                    Log.d("query_fail", "Error getting documents: ", task.getException());
+                }
+            }
+        };
+        // have db update user preferences to reflect that a review has been upvoted
+        MainActivity.dbHelper.updateUserPrefs(updatePrefs, myUN, date);
         // go home
         startActivity(new Intent(this, MainActivity.class));
     }
