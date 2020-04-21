@@ -35,14 +35,6 @@ public class FirestoreHelper {
         mFirestore = FirebaseFirestore.getInstance();
     }
 
-    /**
-     * For any client method which wants a direct handle to the database
-     * @return a handle to the database
-     */
-    public FirebaseFirestore getDBInstance() {
-        return this.mFirestore;
-    }
-
 
     /**
      * get the value of field 'field' of the document 'doc_key', in collection 'collection',

@@ -70,18 +70,6 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
     }
 
     /**
-     * Update query
-     * @param query
-     */
-    public void setQuery(Query query) {
-        stopListening();    // Stop listening
-        snapshots.clear();  // Clear existing data
-        notifyDataSetChanged();
-        this.query = query; // Listen to new query
-        startListening();
-    }
-
-    /**
      * Gets the size of the document snapshot ArrayList
      * @return
      */
@@ -105,6 +93,7 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
      * @param e
      */
     protected void onError(FirebaseFirestoreException e) {
+        Log.d("Generic", "This should not be called");
     }
 
     /**
@@ -167,15 +156,12 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
             DocumentSnapshot snapshot = change.getDocument();
             switch (change.getType()) {
                 case ADDED:
-                    // TODO: handle document added
                     onDocumentAdded(change);
                     break;
                 case MODIFIED:
-                    // TODO: handle document modified
                     onDocumentModified(change);
                     break;
                 case REMOVED:
-                    // TODO: handle document removed
                     onDocumentRemoved(change);
                     break;
             }

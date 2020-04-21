@@ -124,7 +124,6 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
          */
         public void bind(final DocumentSnapshot snapshot, final boolean enable_buttons) {
             MovieReview review = snapshot.toObject(MovieReview.class);
-            Resources resources = itemView.getResources();
             movieName.setText(review.getMovieName());
             reviewContents.setText(review.getContents());
             reviewAuthor.setText(review.getUserName());
@@ -150,9 +149,7 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
             Context applicationContext = MainActivity.getContextOfApplication();
             final SharedPreferences myPrefs = applicationContext.getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
             boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
-
             final String review_id = snapshot.getId();
-
             // check user prefs to see if this activity has been upvoted/downvoted already
             int upvoteValue = myPrefs.getInt(review_id, MainActivity.NOTVOTED);
             final boolean upvoted = upvoteValue == MainActivity.UPVOTED;
