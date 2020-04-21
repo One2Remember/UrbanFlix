@@ -93,8 +93,8 @@ public class MainActivity extends AppCompatActivity {
      */
     boolean loginIfAvailable() {
         // get local credentials if saved
-        String un = prefHelper.getStringPreference("UN", "null");
-        String pw = prefHelper.getStringPreference("PW", "null");
+        String un = prefHelper.getPreference("UN", "null");
+        String pw = prefHelper.getPreference("PW", "null");
         // if they are both stored previously, log in user
         if(!un.equals("null") && !pw.equals("null")) {
             prefHelper.setPreference("LoggedIn", true);
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void initButtons() {
         // get login status
-        boolean loggedIn = prefHelper.getBoolPreference("LoggedIn", false);
+        boolean loggedIn = prefHelper.getPreference("LoggedIn", false);
         if(loggedIn) {  // set account button and enable fab
             ((Button)findViewById(R.id.login)).setText("Account");
             findViewById(R.id.create_review_main).setVisibility(View.VISIBLE);
@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void goToAccountScreen(View view) {
         // get login status
-        boolean loggedIn = prefHelper.getBoolPreference("LoggedIn", false);
+        boolean loggedIn = prefHelper.getPreference("LoggedIn", false);
         if(loggedIn) {  // go to view account page
             startActivity(new Intent(this, ViewAccountActivity.class));
         }

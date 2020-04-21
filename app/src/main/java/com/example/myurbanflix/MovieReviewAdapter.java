@@ -1,7 +1,5 @@
 package com.example.myurbanflix;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -146,11 +144,11 @@ public class MovieReviewAdapter extends FirestoreAdapter<MovieReviewAdapter.View
         public void setButtonFunctionality(final DocumentSnapshot snapshot) {
             final String review_id = snapshot.getId();
             // Check if user is logged in
-            boolean loggedIn = MainActivity.prefHelper.getBoolPreference("LoggedIn", false);
+            boolean loggedIn = MainActivity.prefHelper.getPreference("LoggedIn", false);
             // check user prefs to see if this activity has been upvoted/downvoted already
-            final String username = MainActivity.prefHelper.getStringPreference("UN", "Admin");
+            final String username = MainActivity.prefHelper.getPreference("UN", "Admin");
             // ask preferences if review has been voted by this user
-            final int voteValue = MainActivity.prefHelper.getIntPreference(review_id + username, MainActivity.NOTVOTED);
+            final int voteValue = MainActivity.prefHelper.getPreference(review_id + username, MainActivity.NOTVOTED);
             // set both buttons to white by default
             upButton.setColorFilter(Color.argb(255,255,255,255));
             downButton.setColorFilter(Color.argb(255,255,255,255));

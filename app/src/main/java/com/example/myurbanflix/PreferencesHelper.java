@@ -5,10 +5,22 @@ import android.content.SharedPreferences;
 
 /**
  * Acts as a helper (an interface) for other activities to use in order to access shared preferences
+ * Contains several overloaded methods for getting and setting particular preferences based
+ * on the type of the parameters given
  */
 public class PreferencesHelper {
+    /**
+     * Allows this class to access shared preferences as if it were the MainActivity (invokes
+     * connection to shared preferences through MainActivity's context)
+     */
     private Context mainContext;
+    /**
+     * Local handle to shared preferences (initialized form MainActivity's context)
+     */
     private SharedPreferences myPrefs;
+    /**
+     * Local handle for Shared Preferences mutator methods to use
+     */
     private SharedPreferences.Editor editor;
 
     /**
@@ -28,7 +40,7 @@ public class PreferencesHelper {
      * @param defaultValue - default value to return if key is not found
      * @return either the preference value if found, or the default value otherwise
      */
-    public String getStringPreference(String id, String defaultValue) {
+    public String getPreference(String id, String defaultValue) {
         return myPrefs.getString(id, defaultValue);
     }
 
@@ -39,7 +51,7 @@ public class PreferencesHelper {
      * @param defaultValue - default value to return if key is not found
      * @return either the preference value if found, or the default value otherwise
      */
-    public boolean getBoolPreference(String id, boolean defaultValue) {
+    public boolean getPreference(String id, boolean defaultValue) {
         return myPrefs.getBoolean(id, defaultValue);
     }
 
@@ -50,13 +62,13 @@ public class PreferencesHelper {
      * @param defaultValue - default value to return if key is not found
      * @return either the preference value if found, or the default value otherwise
      */
-    public int getIntPreference(String id, int defaultValue) {
+    public int getPreference(String id, int defaultValue) {
         return myPrefs.getInt(id, defaultValue);
     }
 
     /**
      * Adds or edits a boolean to shared preferences
-     * @param id - key of preference
+     * @param id - key of preference to mutate
      * @param value - value of preference
      */
     public void setPreference(String id, boolean value) {
@@ -67,7 +79,7 @@ public class PreferencesHelper {
 
     /**
      * Adds or edits a String to shared preferences
-     * @param id - key of preference
+     * @param id - key of preference to mutate
      * @param value - value of preference
      */
     public void setPreference(String id, String value) {
@@ -78,12 +90,22 @@ public class PreferencesHelper {
 
     /**
      * Adds or edits an integer to shared preferences
-     * @param id - key of preference
+     * @param id - key of preference to mutate
      * @param value - value of preference
      */
     public void setPreference(String id, int value) {
         editor = myPrefs.edit();
         editor.putInt(id, value);
+        editor.apply();
+    }
+
+    /**
+     * Removes a preferenced from shared preferences
+     * @param id - key of preference to remove
+     */
+    public void removePreference(String id) {
+        editor = myPrefs.edit();
+        editor.remove(id);
         editor.apply();
     }
 

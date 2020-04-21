@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.TextView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -24,6 +26,10 @@ public class MovieSearchActivity extends AppCompatActivity {
      * a handle to the recycler view in the layout (contains review data)
      */
     private RecyclerView recyclerView;
+    /**
+     * a handle to the fab which allows review creation if user is logged in
+     */
+    private FloatingActionButton addReviewFAB;
     /**
      * a handle to the adapter which is used to inflate views to populate the recycler view
      */
@@ -63,6 +69,7 @@ public class MovieSearchActivity extends AppCompatActivity {
      * query
      */
     private void initViews() {
+        addReviewFAB = findViewById(R.id.add_button);   // grab handle to FAB
         TextView title = findViewById(R.id.results_for);    // grab handle to the page title
         title.setText("Results for: " + message);   // set the title of the page based on user query
         searchBarToMovieSearch();   // adds a listener to search bar at the top
@@ -123,13 +130,12 @@ public class MovieSearchActivity extends AppCompatActivity {
      */
     public void showHideMakeReviewButton() {
         // get whether user is logged in; if preference does not already exist, assume false
-        SharedPreferences myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-        boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
+        boolean loggedIn = MainActivity.prefHelper.getPreference("LoggedIn", false);
         if(loggedIn) {
-            findViewById(R.id.add_button).setVisibility(View.VISIBLE);
+            addReviewFAB.setVisibility(View.VISIBLE);
         }
         else {
-            findViewById(R.id.add_button).setVisibility(View.INVISIBLE);
+            addReviewFAB.setVisibility(View.INVISIBLE);
         }
     }
 
