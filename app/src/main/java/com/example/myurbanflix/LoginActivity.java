@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,8 +12,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -26,40 +23,33 @@ import com.google.firebase.firestore.QuerySnapshot;
  */
 public class LoginActivity extends AppCompatActivity {
     /**
-     * For instantiating shared preferences
+     * handle to warning textview which is hidden by default and displayed when user fails to
+     * provide valid login credentials
      */
-    private SharedPreferences myPrefs;
+    private TextView warning;
     /**
-     * For instantiating shared preferences editor
-     */
-    private SharedPreferences.Editor prefEditor;
-
-    /**
-     * When activity is created, initializes all views on the page, makes connection to firestore,
-     * and pulls down handles to shared preferences
+     * When activity is created, initializes all views on the page, and pulls down handles to
+     * shared preferences
      * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        // set preference editors
-        myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-        prefEditor = myPrefs.edit();
         initView(); // set warning to invisible
     }
 
     /**
-     * hides the invalid credentials warning by default
-     * sets the text of username/password field
+     * hides the invalid credentials warning by default, sets the text of username/password field
      */
     public void initView() {
-        findViewById(R.id.invalid_credentials).setVisibility(View.INVISIBLE);
+        warning = findViewById(R.id.invalid_credentials);
+        warning.setVisibility(View.INVISIBLE);
         ((TextView)findViewById(R.id.textview_username)).setText("Username / Email");
     }
 
     /**
-     * takes user to the home page when they click the login button with valid credentials
+     * Takes user to the home page (MainActivity)
      */
     public void goHome() {
         startActivity(new Intent(this, MainActivity.class));
@@ -75,52 +65,51 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
+     * updates all 3 user preferences needed to log user in
+     * @param un - username of user to log in
+     * @param pw - password of user to log in
+     */
+    public void updateUserLogPrefs(String un, String pw) {
+        MainActivity.prefHelper.setPreference("LoggedIn", true);    // log user in locally
+        MainActivity.prefHelper.setPreference("UN", un);  // save username locally
+        MainActivity.prefHelper.setPreference("PW", pw);  // save password locally
+    }
+
+    /**
      * Called when the user taps the Login button, logs in (if credentials are valid) and takes
      * the user to the home page
      */
     public void login(View view) {
         hideKeyboard(view); // hide the keyboard
-
         // pull data from text fields (username or email AND password)
         final String un_or_email, password;
         un_or_email = ((EditText)findViewById(R.id.acc_create_username)).getText().toString();
         password = ((EditText)findViewById(R.id.acc_create_password)).getText().toString();
-
         // create on complete listener for database to use when checking user credentials,
         // appropriately logging in user if credentials are valid or showing warning and keeping
         // user logged out if credentials are not valid
         OnCompleteListener<QuerySnapshot> loginInIfLegal = new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    boolean MatchingUser = false;
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        MatchingUser = true;
-                        // if user matches an entry in database
-                        if (MatchingUser) {
-                            // mark user as logged in locally
-                            prefEditor.putBoolean("LoggedIn", true);
-                            prefEditor.apply();
-                            // save users username locally
-                            prefEditor.putString("UN", document.getString("username"));
-                            prefEditor.apply();
-                            // save users password locally
-                            prefEditor.putString("PW", password);
-                            prefEditor.apply();
-                            // hide warning
-                            findViewById(R.id.invalid_credentials).setVisibility(View.INVISIBLE);
-                            // Take user to home activity
-                            goHome();
-                        }
+            if (task.isSuccessful()) {
+                boolean MatchingUser = false;
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    MatchingUser = true;
+                    if (MatchingUser) { // if user matches an entry in database
+                        String username = document.getString("username"); // grab un from doc
+                        updateUserLogPrefs(username, password); // update user prefs
+                        warning.setVisibility(View.INVISIBLE);  // hide warning
+                        goHome();   // Take user to home activity
                     }
-                    if(!MatchingUser) {
-                        // show warning that the user does not exist in our database
-                        findViewById(R.id.invalid_credentials).setVisibility(View.VISIBLE);
-                        Log.d("LOGGER", "invalid credentials");
-                    }
-                } else {
-                    Log.d("LOGGER", "Error getting documents: ", task.getException());
                 }
+                if(!MatchingUser) {
+                    // show warning that the user does not exist in our database
+                    warning.setVisibility(View.VISIBLE);
+                    Log.d("LOGGER", "invalid credentials");
+                }
+            } else {
+                Log.d("LOGGER", "Error getting documents: ", task.getException());
+            }
             }
         };
         // hand db helper our listener, along with email/username and password, so it can

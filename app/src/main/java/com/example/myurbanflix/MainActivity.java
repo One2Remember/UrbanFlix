@@ -7,15 +7,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.content.SharedPreferences;
 import android.widget.Button;
 import android.widget.SearchView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-
 
 /**
  * This opens the home page and makes a connection to the firebase db in order to populate
@@ -40,6 +37,21 @@ public class MainActivity extends AppCompatActivity {
      */
     public static final int NOTVOTED = 0;
     /**
+     * for non-activity classes to access shared user prefs, we allow them to pretend they are
+     * operating within the context of the main activity
+     */
+    public static Context contextOfApplication;
+    /**
+     * So other classes can access a single instance of PreferencesHelper to edit/pull from
+     * shared preferences
+     */
+    public static PreferencesHelper prefHelper;
+    /**
+     * A helper for accessing our database for the purpose of generating queries for this class
+     * as well as other classes (public static for this reason)
+     */
+    public static FirestoreHelper dbHelper;
+    /**
      * a handle to the recycler view in the layout (contains review data)
      */
     private RecyclerView recyclerView;
@@ -53,27 +65,9 @@ public class MainActivity extends AppCompatActivity {
      */
     private RecyclerView.LayoutManager layoutManager;
     /**
-     * for non-activity classes to access shared user prefs, we allow them to pretend they are
-     * operating within the context of the main activity
-     */
-    public static Context contextOfApplication;
-    /**
-     * For instantiating shared preferences
-     */
-    private SharedPreferences myPrefs;
-    /**
-     * For instantiating shared preferences editor
-     */
-    private SharedPreferences.Editor prefEditor;
-    /**
      * For holding the query used to populate the recycler view from the db
      */
     private Query mQuery;
-    /**
-     * A helper for accessing our database for the purpose of generating queries for this class
-     * as well as other classes (public static for this reason)
-     */
-    public static FirestoreHelper dbHelper;
 
     /**
      * grabs user preferences, logs in the user if they have stored login credentials, grabs a
@@ -86,9 +80,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        dbHelper = new FirestoreHelper();   // initialize a helper to access the firestore
         contextOfApplication = getApplicationContext(); // set context for sharing w/non-activities
-        myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);   // grab user prefs
+        dbHelper = new FirestoreHelper();   // initialize a helper to access the firestore
+        prefHelper = new PreferencesHelper();   // initialize a helper to access shared preferences
         loginIfAvailable(); // login user if they have stored credentials
         initView();         // Initialize recycler view, search bar, account button
     }
@@ -98,12 +92,12 @@ public class MainActivity extends AppCompatActivity {
      * or not
      */
     boolean loginIfAvailable() {
-        String un = myPrefs.getString("UN", "null");
-        String pw = myPrefs.getString( "PW", "null");
+        // get local credentials if saved
+        String un = prefHelper.getPreference("UN", "null");
+        String pw = prefHelper.getPreference("PW", "null");
+        // if they are both stored previously, log in user
         if(!un.equals("null") && !pw.equals("null")) {
-            prefEditor = myPrefs.edit();
-            prefEditor.putBoolean("LoggedIn", true);
-            prefEditor.apply();
+            prefHelper.setPreference("LoggedIn", true);
             return true;
         }
         return false;
@@ -143,12 +137,13 @@ public class MainActivity extends AppCompatActivity {
      * or disables the FAB for adding a review to keep non-logged users from writing reviews
      */
     public void initButtons() {
-        boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
-        if(loggedIn) {
+        // get login status
+        boolean loggedIn = prefHelper.getPreference("LoggedIn", false);
+        if(loggedIn) {  // set account button and enable fab
             ((Button)findViewById(R.id.login)).setText("Account");
             findViewById(R.id.create_review_main).setVisibility(View.VISIBLE);
         }
-        else {
+        else {  // set login button and disable fab
             ((Button)findViewById(R.id.login)).setText("Login");
             findViewById(R.id.create_review_main).setVisibility(View.INVISIBLE);
         }
@@ -237,13 +232,12 @@ public class MainActivity extends AppCompatActivity {
      * they are logged in, or takes them to login page if they are not
      */
     public void goToAccountScreen(View view) {
-        // get whether user is logged in; if preference does not already exist, assume false
-        boolean loggedIn = myPrefs.getBoolean("LoggedIn", false);
-        Log.d("logged_in_main", String.valueOf(loggedIn));
-        if(loggedIn) {
+        // get login status
+        boolean loggedIn = prefHelper.getPreference("LoggedIn", false);
+        if(loggedIn) {  // go to view account page
             startActivity(new Intent(this, ViewAccountActivity.class));
         }
-        else {
+        else {  // go to login page
             startActivity(new Intent(this, LoginActivity.class));
         }
     }

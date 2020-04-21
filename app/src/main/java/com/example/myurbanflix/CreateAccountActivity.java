@@ -3,7 +3,6 @@ package com.example.myurbanflix;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,8 +11,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -23,14 +20,6 @@ import com.google.firebase.firestore.QuerySnapshot;
  * are valid, creates a new user and pushes it to the database
  */
 public class CreateAccountActivity extends AppCompatActivity {
-    /**
-     * For instantiating shared preferences
-     */
-    private SharedPreferences myPrefs;
-    /**
-     * For instantiating shared preferences editor
-     */
-    private SharedPreferences.Editor prefEditor;
     /**
      * a handle to the edit text field for the email address, for reading user input
      */
@@ -54,22 +43,14 @@ public class CreateAccountActivity extends AppCompatActivity {
     private Button accCreateButton;
 
     /**
-     * initializes user preferences, google firestore connection, and all views on the page
+     * Switches context to CreateAccountActivity and initializes all views on the page
      * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
-        initPreferences();  // Initializes User Preferences
         initViews();        // initialize views
-    }
-
-    /**
-     * initialize user preferences handle
-     */
-    public void initPreferences() {
-        myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
     }
 
     /**
@@ -100,9 +81,7 @@ public class CreateAccountActivity extends AppCompatActivity {
      * takes user to account page
      */
     public void setLogInThenView() {
-        prefEditor = myPrefs.edit();    /// open shared pref editor
-        prefEditor.putBoolean("LoggedIn", true);    // set login to true
-        prefEditor.apply(); // commit changes
+        MainActivity.prefHelper.setPreference("LoggedIn", true);
         // Take user to View Account Page
         startActivity(new Intent(this, ViewAccountActivity.class));
     }
@@ -111,10 +90,8 @@ public class CreateAccountActivity extends AppCompatActivity {
      * save grabbed fields from username/password into SharedPrefences
      */
     public void saveLoginInfo(String un, String pw) {
-        prefEditor = myPrefs.edit();
-        prefEditor.putString("UN", un);
-        prefEditor.putString("PW", pw);
-        prefEditor.apply();
+        MainActivity.prefHelper.setPreference("UN", un);
+        MainActivity.prefHelper.setPreference("PW", pw);
     }
 
     /** Called when user taps the Home button */

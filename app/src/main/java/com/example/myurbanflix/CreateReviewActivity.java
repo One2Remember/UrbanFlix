@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -17,8 +16,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import java.text.DateFormat;
@@ -69,28 +66,16 @@ public class CreateReviewActivity extends AppCompatActivity {
      * a handle to the submit review button in order to enable/disable it as needed
      */
     private Button submitReviewButton;
-    /**
-     * For instantiating shared preferences
-     */
-    private SharedPreferences myPrefs;
-    /**
-     * For instantiating shared preferences editor
-     */
-    private SharedPreferences.Editor prefEditor;
 
     /**
-     * grabs handle to shared preferences, makes connection to firebase, and initializes all views
-     * on the page to give them functionality
+     * initializes all views on the page to give them functionality
      * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_review);
-        // get user preferences
-        myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-        // initialize all views on screen
-        initViews();
+        initViews();    // initialize all views on screen
     }
 
     /**
@@ -231,34 +216,25 @@ public class CreateReviewActivity extends AppCompatActivity {
     }
 
     /**
-     * mark a review as upvoted in user preferences by review key (provided by the firestore)
-     * @param key
-     */
-    public void updateUserPreference(String key) {
-        prefEditor = myPrefs.edit();
-        prefEditor.putInt(key, MainActivity.UPVOTED);
-        prefEditor.apply();
-    }
-
-    /**
      * Called when the user taps the Submit button, adds review to database, updates shared
      * preferences so app knows user has upvoted their own review, and goes home
      */
     public void createNewReview(View view) {
-        String movieTitle, reviewTitle, reviewBody, date, myUN;
+        final String movieTitle, reviewTitle, reviewBody, date, myUN;
         // pull data from text fields
         movieTitle = movieTitleField.getText().toString();
         reviewTitle = reviewTitleField.getText().toString();
         reviewBody = commentBodyField.getText().toString();
         // get username from User Preferences
-        myUN = myPrefs.getString("UN", "Admin");
+        myUN = MainActivity.prefHelper.getPreference("UN", "Admin");
         // get date from java functions
         date = getDate();
         // use data to create object to insert into database (upvotes should be 1, downvotes 0)
         MovieReview newReview = new MovieReview(reviewTitle, movieTitle, myUN, date, reviewBody);
         // push new review to database
         MainActivity.dbHelper.pushReviewToDB(newReview);
-        // create listener so db knows what to do when it finds review we want it to search for
+        // create listener so db knows what to do when it finds review ID for us (mark it as
+        // upvoted by the current user in shared preferences)
         OnCompleteListener<QuerySnapshot> updatePrefs = new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -271,14 +247,13 @@ public class CreateReviewActivity extends AppCompatActivity {
                         }
                         foundQuery = true;
                     }
-                    if(foundQuery) {
-                        Log.d("LOGGER", "adding review " + docID + " to sharedprefs");
-                        updateUserPreference(docID);
+                    if(foundQuery) { // once it is found, mark it as upvoted in shared preferences
+                        MainActivity.prefHelper.setPreference(docID + myUN, MainActivity.UPVOTED);
                     } else {
                         Log.d("LOGGER", "new review not found");
                     }
                 } else {
-                    Log.d("query_fail", "Error getting documents: ", task.getException());
+                    Log.d("LOGGER", "Error getting documents: ", task.getException());
                 }
             }
         };

@@ -4,11 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 
@@ -32,14 +30,6 @@ public class ViewAccountActivity extends AppCompatActivity {
      */
     private RecyclerView.LayoutManager layoutManager;
     /**
-     * For instantiating shared preferences
-     */
-    private SharedPreferences myPrefs;
-    /**
-     * For instantiating shared preferences editor
-     */
-    private SharedPreferences.Editor prefEditor;
-    /**
      * for storing the query used to populate the recycler view
      */
     private Query mQuery;
@@ -52,8 +42,6 @@ public class ViewAccountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_account);
-        myPrefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);    // init preference
-        initQuery();   // initialize handle to FireStore
         initRecycler(); // initialize the recycler view, populate from database
     }
 
@@ -79,21 +67,16 @@ public class ViewAccountActivity extends AppCompatActivity {
     }
 
     /**
-     * initializes a connection to the firestore and produces the query of the db giving back
-     * an ascending list of the specific user's reviews based on the date the reviews were created
-     * (oldest reviews appear at the top)
-     */
-    public void initQuery() {
-        String username = myPrefs.getString("UN", "Admin");
-        mQuery = MainActivity.dbHelper.getMatchingRecyclerQuery("reviews", "userName", username,
-                "dateCreated", Query.Direction.ASCENDING, 50);
-    }
-
-    /**
      * initializes the recyclerview from a query provided by the dbHelper, with queries sorted
      * by matching username, with oldest reviews showed first
      */
     public void initRecycler() {
+        // get user's username from shared preferences
+        String username = MainActivity.prefHelper.getPreference("UN", "Admin");
+        // asks dbhelper to produce a query containing an ascending list of the specific user's reviews
+        // based on the date the reviews were created (oldest reviews appear at the top)
+        mQuery = MainActivity.dbHelper.getMatchingRecyclerQuery("reviews", "userName", username,
+                "dateCreated", Query.Direction.ASCENDING, 50);
         // Set up the RecyclerView
         recyclerView = findViewById(R.id.movie_list_recycler_main);
         // use this setting to improve performance if you know that changes
@@ -114,19 +97,20 @@ public class ViewAccountActivity extends AppCompatActivity {
         recyclerView.setAdapter(mAdapter);
     }
 
-    /** Called when the user taps the Logout button, logs out and takes user home */
+    /**
+     * Called when the user taps the Logout button, logs out and takes user home
+     */
     public void logoutAndGoHome(View view) {
-        prefEditor = myPrefs.edit();
-        // remove logged in status, username and password from shared preferences
-        prefEditor.putBoolean("LoggedIn", false);
-        prefEditor.remove("UN");
-        prefEditor.remove("PW");
-        prefEditor.apply();
-        // Take user home
-        startActivity(new Intent(this, MainActivity.class));
+        // clear user preferences containing log-in credentials and log-in status
+        MainActivity.prefHelper.setPreference("LoggedIn", false);
+        MainActivity.prefHelper.removePreference("UN");
+        MainActivity.prefHelper.removePreference("PW");
+        goHome(view);   // Take user home (MainActivity)
     }
 
-    /** Called when user taps the Home button */
+    /**
+     * Called when user taps the Home button (takes them to home activity)
+     */
     public void goHome(View view) {
         startActivity(new Intent(this, MainActivity.class));
     }
